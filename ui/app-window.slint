@@ -1,18 +1,110 @@
-import { Button, VerticalBox } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox } from "std-widgets.slint";
+import "./assets/Roboto_Condensed-Regular.ttf";
 
-export component AppWindow inherits Window {
-    in-out property <int> counter: 42;
+export global theme {
+    out property <length> H : 30px;
+    out property <length> ALLIANCE_NAME : 25px;
+    out property <length> ALLIANCE_SOCRE : 50px;
+
+    out property <percent> ALLIANCE_HEIGHT : 10%;
+    out property <percent> TEAM_HEIGHT : 8%;
+    out property <percent> SOCRE_HEIGHT : 10%;
+}
+
+export component PublicWindow inherits Window {
+    in-out property <int> counter: 41;
     callback request-increase-value();
-    VerticalBox {
-        Text {
-            text: "Counter: \{root.counter}";
-        }
 
-        Button {
-            text: "Increase value";
-            clicked => {
-                root.request-increase-value();
+    default-font-family: "Roboto";
+
+    width: 1536px;
+    height: 864px;
+
+    background: #000;
+
+    HorizontalLayout {
+        padding-top: 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-bottom: 5px;
+
+        VerticalLayout {
+            HorizontalLayout {
+                Rectangle {
+                    border-top-left-radius: 30px;
+                    border-top-right-radius: 30px;
+                    width: 33.333%;
+                    height: theme.ALLIANCE_HEIGHT;
+                    background: blue;
+                    Text {
+                    font-size: theme.H;
+                    padding: 5px;
+                    color: white;
+                    text: "Blue Alliance";
+                    }
+                }
+                Rectangle {
+                    border-top-left-radius: 30px;
+                    border-top-right-radius: 30px;
+                    width: 33.333%;
+                    height: theme.SOCRE_HEIGHT;
+                    background: white;
+                    Text {
+                        font-size: theme.H;
+                        color: black;
+                        text: "Score Breakdown";
+                    }
+                }
+                Rectangle {
+                    border-top-left-radius: 30px;
+                    border-top-right-radius: 30px;
+                    width: 33.333%;
+                    height:  theme.ALLIANCE_HEIGHT;
+                    background: red;
+                    Text {
+                        font-size: theme.H;
+                        padding: 5px;
+                        color: white;
+                        text: "Red Alliance";
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                Rectangle {
+                    width: 33.333%;
+                    height: theme.TEAM_HEIGHT;
+                    background: blue;
+                    Text {
+                    font-size: theme.ALLIANCE_NAME;
+                    padding: 5px;
+                    color: white;
+                    text: "Team 1";
+                    }
+                }
+                Rectangle {
+                    background: white;
+                }
+                Rectangle {
+                    width: 33.333%;
+                    height: theme.TEAM_HEIGHT;
+                    background: red;
+                    Text {
+                    font-size: theme.ALLIANCE_NAME;
+                    padding: 5px;
+                    color: white;
+                    text: "Team 2";
+                    }
+                }
             }
         }
+    }
+}
+
+export component ControlWindow inherits Window {
+    width: 800px;
+    height: 480px;
+    VerticalBox {
+        Text {text: "Score";}
     }
 }

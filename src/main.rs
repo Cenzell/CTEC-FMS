@@ -4,19 +4,21 @@
 use std::error::Error;
 
 slint::include_modules!();
-
+ 
 fn main() -> Result<(), Box<dyn Error>> {
-    let ui = AppWindow::new()?;
+    let display_ui = PublicWindow::new()?;
+    let input_ui = ControlWindow::new()?;
 
-    ui.on_request_increase_value({
-        let ui_handle = ui.as_weak();
+    display_ui.on_request_increase_value({
+        let ui_handle = display_ui.as_weak();
         move || {
             let ui = ui_handle.unwrap();
             ui.set_counter(ui.get_counter() + 1);
         }
     });
 
-    ui.run()?;
+    input_ui.show()?;
+    display_ui.run()?;
 
     Ok(())
 }
