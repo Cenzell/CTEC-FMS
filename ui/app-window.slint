@@ -30,6 +30,7 @@ export component PublicWindow inherits Window {
 
         VerticalLayout {
             HorizontalLayout {
+                spacing: 5px;
                 Rectangle {
                     border-top-left-radius: 30px;
                     border-top-right-radius: 30px;
@@ -37,10 +38,10 @@ export component PublicWindow inherits Window {
                     height: theme.ALLIANCE_HEIGHT;
                     background: blue;
                     Text {
-                    font-size: theme.H;
-                    padding: 5px;
-                    color: white;
-                    text: "Blue Alliance";
+                        font-size: theme.H;
+                        padding: 5px;
+                        color: white;
+                        text: "Blue Alliance";
                     }
                 }
                 Rectangle {
@@ -59,7 +60,7 @@ export component PublicWindow inherits Window {
                     border-top-left-radius: 30px;
                     border-top-right-radius: 30px;
                     width: 33.333%;
-                    height:  theme.ALLIANCE_HEIGHT;
+                    height: theme.ALLIANCE_HEIGHT;
                     background: red;
                     Text {
                         font-size: theme.H;
@@ -71,29 +72,43 @@ export component PublicWindow inherits Window {
             }
 
             HorizontalLayout {
+                spacing: 5px;
                 Rectangle {
+                    border-bottom-left-radius: 30px;
+                    border-bottom-right-radius: 30px;
                     width: 33.333%;
                     height: theme.TEAM_HEIGHT;
                     background: blue;
                     Text {
-                    font-size: theme.ALLIANCE_NAME;
-                    padding: 5px;
-                    color: white;
-                    text: "Team 1";
+                        y: 1px;
+                        font-size: theme.ALLIANCE_NAME;
+                        padding: 5px;
+                        color: white;
+                        text: "Team 1";
                     }
                 }
                 Rectangle {
                     background: white;
+                    width: 33.333%;
+                    Text {
+                        y: 1px;
+                        color: black;
+                        font-size: 45px;
+                        text: "Match: ";
+                    }
                 }
                 Rectangle {
+                    border-bottom-left-radius: 30px;
+                    border-bottom-right-radius: 30px;
                     width: 33.333%;
                     height: theme.TEAM_HEIGHT;
                     background: red;
                     Text {
-                    font-size: theme.ALLIANCE_NAME;
-                    padding: 5px;
-                    color: white;
-                    text: "Team 2";
+                        y: 1px;
+                        font-size: theme.ALLIANCE_NAME;
+                        padding: 5px;
+                        color: white;
+                        text: "Team 2";
                     }
                 }
             }
@@ -104,7 +119,34 @@ export component PublicWindow inherits Window {
 export component ControlWindow inherits Window {
     width: 800px;
     height: 480px;
-    VerticalBox {
-        Text {text: "Score";}
+    background: gray;
+
+    VerticalLayout {
+        spacing: 10px;
+        padding: 10px;
+        Rectangle {
+            height: 25px;
+
+            background: black;
+            border-radius: 10px;
+            border-width: 1px;
+            border-color: darkblue;
+            
+            Text {text: "Control Window"; color: white;}
+        }
+        Rectangle {
+            height: 50px;
+
+            background: black;
+            border-radius: 10px;
+            border-width: 1px;
+            border-color: darkblue;
+
+            Text {text: "Match Managment"; color: white;}
+            HorizontalLayout {
+                
+            }
+
+        }
     }
 }

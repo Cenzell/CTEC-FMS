@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     display_ui.on_request_increase_value({
         let ui_handle = display_ui.as_weak();
-        move || {
+        move || { 
             let ui = ui_handle.unwrap();
             ui.set_counter(ui.get_counter() + 1);
         }
