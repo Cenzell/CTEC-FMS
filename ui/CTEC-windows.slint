@@ -1,4 +1,4 @@
-import { Button, VerticalBox, HorizontalBox } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, SpinBox } from "std-widgets.slint";
 import "./assets/Roboto_Condensed-Regular.ttf";
 
 export global theme {
@@ -11,9 +11,15 @@ export global theme {
     out property <percent> SOCRE_HEIGHT : 10%;
 }
 
-export component PublicWindow inherits Window {
+export global vars {
+    in-out property <int> matchNumber : 1;
+}
+
+export component ScoreWindow inherits Window {
     in-out property <int> counter: 41;
     callback request-increase-value();
+
+    title: "CTEC In-House Challenge";
 
     default-font-family: "Roboto";
 
@@ -94,7 +100,7 @@ export component PublicWindow inherits Window {
                         y: 1px;
                         color: black;
                         font-size: 45px;
-                        text: "Match: ";
+                        text: "Match: " + vars.matchNumber;
                     }
                 }
                 Rectangle {
@@ -117,14 +123,23 @@ export component PublicWindow inherits Window {
 }
 
 export component ControlWindow inherits Window {
-    width: 800px;
-    height: 480px;
+    //width: 800px;
+    //height: 480px;
     background: gray;
+
+    title: "CTEC - Control";
+    //background: @image-url("./assets/StellerConstruction.png");
+    icon: @image-url("./assets/StellerConstruction.png");
+    Image {
+        source: @image-url("./assets/StellerConstruction.png");
+        image-fit: contain;
+    }
 
     VerticalLayout {
         spacing: 10px;
         padding: 10px;
         Rectangle {
+            opacity: 0.95;
             height: 25px;
 
             background: black;
@@ -135,18 +150,57 @@ export component ControlWindow inherits Window {
             Text {text: "Control Window"; color: white;}
         }
         Rectangle {
-            height: 50px;
+            height: 55px;
 
             background: black;
             border-radius: 10px;
             border-width: 1px;
             border-color: darkblue;
 
-            Text {text: "Match Managment"; color: white;}
+            Text {text: "Match Managment " + vars.matchNumber; color: white; y: 3px;}
             HorizontalLayout {
-                
+                y: parent.height * 0.085;
+                Rectangle {Text {text: "Match Number:";}}
+                Rectangle {
+                    width: 150px;
+                    SpinBox {
+                        value <=> vars.matchNumber;
+                    }
+                }
             }
+        }
+        Rectangle {
+            height: 120px;
 
+            background: black;
+            border-radius: 10px;
+            border-width: 1px;
+            border-color: darkblue;
+
+            Text {text: "Auto Score"; color: white; y: 3px;}
+            HorizontalLayout {
+                y: parent.height * 0.085;
+                padding: 20px;
+                spacing: 20px;
+                Rectangle {
+                    border-radius: 10px;
+                    border-width: 4px;
+                    border-color: darkblue;
+                    Text {
+                        y: 10px;
+                        text: "Blue";
+                    }
+                }
+                Rectangle {
+                    border-radius: 10px;
+                    border-width: 4px;
+                    border-color: darkred;
+                    Text {
+                        y: 10px;
+                        text: "Red";
+                    }
+                }
+            }
         }
     }
 }
