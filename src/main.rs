@@ -75,12 +75,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
                     let teams_borrowed = teams.clone(); // optional if already in scope
 
-                    let red1 = teams_borrowed.row_data(current_match.red_alliance.0);
-                    let red2 = teams_borrowed.row_data(current_match.red_alliance.1);
-                    let blue1 = teams_borrowed.row_data(current_match.blue_alliance.0);
-                    let blue2 = teams_borrowed.row_data(current_match.blue_alliance.1);
-
-
                     if let (Some(red1), Some(red2), Some(blue1), Some(blue2)) = (
                         teams_borrowed.row_data(current_match.red_alliance.0),
                         teams_borrowed.row_data(current_match.red_alliance.1),
@@ -114,13 +108,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
 
     // Handle the counter increase callback
-    score_ui.on_request_increase_value({
+    /*score_ui.on_request_increase_value({
         let ui_handle = score_ui.as_weak();
         move || {
             let ui = ui_handle.unwrap();
             ui.set_counter(ui.get_counter() + 1);
         }
-    });
+    });*/
 
     // Show both windows
     control_ui.show()?;
