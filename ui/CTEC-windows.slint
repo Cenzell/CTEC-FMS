@@ -12,12 +12,15 @@ export global theme {
 }
 
 export global vars {
-    in-out property <int> matchNumber : 1;
+    in-out property <int> matchNumber: 1;
+    in-out property<string> red_team1;
+    in-out property<string> red_team2;
+    in-out property<string> blue_team1;
+    in-out property<string> blue_team2;
+    in-out property <int> max_matches: 10;
 }
 
 export component ScoreWindow inherits Window {
-    in-out property <int> counter: 41;
-    callback request-increase-value();
 
     title: "CTEC In-House Challenge";
 
@@ -90,7 +93,7 @@ export component ScoreWindow inherits Window {
                         font-size: theme.ALLIANCE_NAME;
                         padding: 5px;
                         color: white;
-                        text: "Team 1";
+                        text: vars.blue_team1 + "    " + vars.blue_team2;
                     }
                 }
                 Rectangle {
@@ -114,7 +117,7 @@ export component ScoreWindow inherits Window {
                         font-size: theme.ALLIANCE_NAME;
                         padding: 5px;
                         color: white;
-                        text: "Team 2";
+                        text: vars.red_team1 + "    " + vars.red_team2;
                     }
                 }
             }
@@ -164,6 +167,8 @@ export component ControlWindow inherits Window {
                 Rectangle {
                     width: 150px;
                     SpinBox {
+                        maximum: vars.max_matches;
+                        minimum: 1;
                         value <=> vars.matchNumber;
                     }
                 }
@@ -190,6 +195,7 @@ export component ControlWindow inherits Window {
                         y: 10px;
                         text: "Blue";
                     }
+
                 }
                 Rectangle {
                     border-radius: 10px;
