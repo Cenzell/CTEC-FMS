@@ -1,4 +1,4 @@
-import { Button, VerticalBox, HorizontalBox, SpinBox } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, SpinBox, GroupBox } from "std-widgets.slint";
 import "./assets/Roboto_Condensed-Regular.ttf";
 
 export global theme {
@@ -7,17 +7,28 @@ export global theme {
     out property <length> ALLIANCE_SOCRE : 50px;
 
     out property <percent> ALLIANCE_HEIGHT : 10%;
+    out property <length> ALLIANCE_SCORE: 60px;
     out property <percent> TEAM_HEIGHT : 8%;
     out property <percent> SOCRE_HEIGHT : 10%;
 }
 
 export global vars {
     in-out property <int> matchNumber: 1;
+
     in-out property<string> red_team1;
     in-out property<string> red_team2;
     in-out property<string> blue_team1;
     in-out property<string> blue_team2;
+
+    in-out property<string> red_team1_members;
+    in-out property<string> red_team2_members;
+    in-out property<string> blue_team1_members;
+    in-out property<string> blue_team2_members;
+
     in-out property <int> max_matches: 10;
+
+    in-out property <int> red_score: 0;
+    in-out property <int> blue_score: 0;
 }
 
 export component ScoreWindow inherits Window {
@@ -83,8 +94,6 @@ export component ScoreWindow inherits Window {
             HorizontalLayout {
                 spacing: 5px;
                 Rectangle {
-                    border-bottom-left-radius: 30px;
-                    border-bottom-right-radius: 30px;
                     width: 33.333%;
                     height: theme.TEAM_HEIGHT;
                     background: blue;
@@ -94,6 +103,13 @@ export component ScoreWindow inherits Window {
                         padding: 5px;
                         color: white;
                         text: vars.blue_team1 + "    " + vars.blue_team2;
+                    }
+                    Text {
+                        y: 40px;
+                        font-size: theme.ALLIANCE_NAME - 7px;
+                        padding: 5px;
+                        color: white;
+                        text: vars.blue_team1_members + "            " + vars.blue_team2_members;
                     }
                 }
                 Rectangle {
@@ -107,8 +123,6 @@ export component ScoreWindow inherits Window {
                     }
                 }
                 Rectangle {
-                    border-bottom-left-radius: 30px;
-                    border-bottom-right-radius: 30px;
                     width: 33.333%;
                     height: theme.TEAM_HEIGHT;
                     background: red;
@@ -118,6 +132,55 @@ export component ScoreWindow inherits Window {
                         padding: 5px;
                         color: white;
                         text: vars.red_team1 + "    " + vars.red_team2;
+                    }
+                    Text {
+                        y: 40px;
+                        font-size: theme.ALLIANCE_NAME - 7px;
+                        padding: 5px;
+                        color: white;
+                        text: vars.red_team1_members + "            " + vars.red_team2_members;
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 5px;
+                Rectangle {
+                    border-bottom-left-radius: 30px;
+                    border-bottom-right-radius: 30px;
+                    width: 33.333%;
+                    height: 12%;
+                    background: blue;
+                    Text {
+                        y: parent.y /2;
+                        font-size: theme.ALLIANCE_SCORE;
+                        padding: 1px;
+                        color: white;
+                        text: vars.blue_score;
+                    }
+                }
+                Rectangle {
+                    background: white;
+                    width: 33.333%;
+                    Text {
+                        y: 1px;
+                        color: black;
+                        font-size: 45px;
+                        text: "";
+                    }
+                }
+                Rectangle {
+                    border-bottom-left-radius: 30px;
+                    border-bottom-right-radius: 30px;
+                    width: 33.333%;
+                    height: theme.TEAM_HEIGHT;
+                    background: red;
+                    Text {
+                        y: parent.y /2;
+                        font-size: theme.ALLIANCE_SCORE;
+                        padding: 1px;
+                        color: white;
+                        text: vars.red_score;
                     }
                 }
             }
@@ -195,7 +258,6 @@ export component ControlWindow inherits Window {
                         y: 10px;
                         text: "Blue";
                     }
-
                 }
                 Rectangle {
                     border-radius: 10px;

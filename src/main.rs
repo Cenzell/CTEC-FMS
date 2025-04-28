@@ -13,6 +13,9 @@ struct Team {
     members: String,
     rank: u8,
     wins: u8,
+    losses: u8,
+    ties: u8,
+    rp: u8,
 }
 
 #[derive(Debug, Clone)]
@@ -30,14 +33,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     let control_ui_weak = control_ui.as_weak();
 
     let team_data = Rc::new(VecModel::from(vec![
-        Team { number: 1, name: "Deuce".into(), members: "Ian - JT".into(), rank: 0, wins: 0 },
-        Team { number: 2, name: "FreakBot 9000".into(), members: "Logan - Bennett".into(), rank: 0, wins: 0 },
-        Team { number: 3, name: "JPC".to_string(), members: "Sam - Xavier".to_string(), rank: 0, wins: 0},
-        Team { number: 4, name: "Cooper Bot".to_string(), members: "John - Scott".to_string(), rank: 0, wins: 0},
-        Team { number: 5, name: "Fat Man".to_string(), members: "Austin - Evan".to_string(), rank: 0, wins: 0},
-        Team { number: 6, name: "Tau".to_string(), members: "Fabian - Tanav - Cru".to_string(), rank: 0, wins: 0},
-        Team { number: 7, name: "'Might' Blow Up".to_string(), members: "Andrew - Jack - Jackson L".to_string(), rank: 0, wins: 0},
-        Team { number: 8, name: "Phi".to_string(), members: "Jesse - Zach - Drew".to_string(), rank: 0, wins: 0},
+        Team { number: 1, name: "Deuce".into(), members: "Ian - JT".into(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0 },
+        Team { number: 2, name: "FreakBot 9000".into(), members: "Logan - Bennett".into(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
+        Team { number: 3, name: "JPC".to_string(), members: "Sam - Xavier".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
+        Team { number: 4, name: "Cooper Bot".to_string(), members: "John - Scott".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
+        Team { number: 5, name: "Fat Man".to_string(), members: "Austin - Evan".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
+        Team { number: 6, name: "Tau".to_string(), members: "Fabian - Tanav - Cru".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
+        Team { number: 7, name: "'Might' Blow Up".to_string(), members: "Andrew - Jack - Jackson L".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
+        Team { number: 8, name: "Phi".to_string(), members: "Jesse - Zach - Drew".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
     ]));
 
     let match_schedule = vec![
@@ -65,7 +68,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         slint::TimerMode::Repeated,
         Duration::from_millis(100),
         move || {
-            // Check if control window's matchNumber has changed
+            // Check if the control window's matchNumber has changed
             if let (Some(control), Some(score)) = (control_ui_weak.upgrade(), score_ui_weak.upgrade()) {
 
                 let match_num = control.global::<vars>().get_matchNumber();
@@ -85,6 +88,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                         score.global::<vars>().set_red_team2(red2.name.clone().into());
                         score.global::<vars>().set_blue_team1(blue1.name.clone().into());
                         score.global::<vars>().set_blue_team2(blue2.name.clone().into());
+                        
+                        score.global::<vars>().set_red_team1_members(red1.members.clone().into());
+                        score.global::<vars>().set_red_team2_members(red2.members.clone().into());
+                        score.global::<vars>().set_blue_team1_members(blue1.members.clone().into());
+                        score.global::<vars>().set_blue_team2_members(blue2.members.clone().into());
                     }
                 }
 
@@ -93,12 +101,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
                 let mut prev = previous_value.borrow_mut();
 
-                // If control value has changed from previous, update score window
+                // If the control value has changed from previous, update the score window
                 if control_value != *prev {
                     score.global::<vars>().set_matchNumber(control_value);
                     *prev = control_value;
                 }
-                // If score value has changed and is different from control, update control window
+                // If the score value has changed and is different from control, update the control window
                 else if score_value != control_value {
                     control.global::<vars>().set_matchNumber(score_value);
                     *prev = score_value;
