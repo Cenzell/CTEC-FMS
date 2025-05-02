@@ -1,274 +1,698 @@
-import { Button, VerticalBox, HorizontalBox, SpinBox, GroupBox } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, SpinBox, GroupBox, CheckBox, TabWidget } from "std-widgets.slint";
 import "./assets/Roboto_Condensed-Regular.ttf";
 
 export global theme {
-    out property <length> H : 30px;
-    out property <length> ALLIANCE_NAME : 25px;
-    out property <length> ALLIANCE_SOCRE : 50px;
+	out property <length> H : 30px;
+	out property <length> ALLIANCE_NAME : 25px;
+	out property <length> ALLIANCE_SOCRE : 50px;
 
-    out property <percent> ALLIANCE_HEIGHT : 10%;
-    out property <length> ALLIANCE_SCORE: 60px;
-    out property <percent> TEAM_HEIGHT : 8%;
-    out property <percent> SOCRE_HEIGHT : 10%;
+	out property <percent> ALLIANCE_HEIGHT : 10%;
+	out property <length> ALLIANCE_SCORE: 60px;
+	out property <percent> TEAM_HEIGHT : 8%;
+	out property <percent> SOCRE_HEIGHT : 10%;
 }
 
 export global vars {
-    in-out property <int> matchNumber: 1;
+	in-out property <int> current_menu: 0;
+	in-out property <int> matchNumber: 1;
 
-    in-out property<string> red_team1;
-    in-out property<string> red_team2;
-    in-out property<string> blue_team1;
-    in-out property<string> blue_team2;
+	in-out property<string> red_team1;
+	in-out property<string> red_team2;
+	in-out property<string> blue_team1;
+	in-out property<string> blue_team2;
 
-    in-out property<string> red_team1_members;
-    in-out property<string> red_team2_members;
-    in-out property<string> blue_team1_members;
-    in-out property<string> blue_team2_members;
+	in-out property<string> red_team1_members;
+	in-out property<string> red_team2_members;
+	in-out property<string> blue_team1_members;
+	in-out property<string> blue_team2_members;
 
-    in-out property <int> max_matches: 10;
+	in-out property <int> max_matches: 10;
 
-    in-out property <int> red_score: 0;
-    in-out property <int> blue_score: 0;
+	in-out property <int> red_score: 0;
+	in-out property <int> blue_score: 0;
+}
+
+export global score_blue {
+    in-out property <int> park: 0;
+    in-out property <int> auto_ground: 0;
+    in-out property <int> auto_beacon: 0;
+    in-out property <int> auto_center: 0;
+    in-out property <int> auto_L1: 0;
+    in-out property <int> auto_L2: 0;
+    in-out property <int> auto_L3: 0;
+
+    in-out property <int> ground: 0;
+    in-out property <int> beacon: 0;
+    in-out property <int> center: 0;
+    in-out property <int> L1: 0;
+    in-out property <int> L2: 0;
+    in-out property <int> L3: 0;
+
+    in-out property <int> end_park: 0;
+    in-out property <int> climb: 0;
+
+	in-out property <int> primary: 0;
+	in-out property <int> power_up: 0;
+	in-out property <int> redundant: 0;
+}
+
+export global score_red {
+    in-out property <int> park: 0;
+    in-out property <int> auto_ground: 0;
+    in-out property <int> auto_beacon: 0;
+    in-out property <int> auto_center: 0;
+    in-out property <int> auto_L1: 0;
+    in-out property <int> auto_L2: 0;
+    in-out property <int> auto_L3: 0;
+
+    in-out property <int> ground: 0;
+    in-out property <int> beacon: 0;
+    in-out property <int> center: 0;
+    in-out property <int> L1: 0;
+    in-out property <int> L2: 0;
+    in-out property <int> L3: 0;
+
+    in-out property <int> end_park: 0;
+    in-out property <int> climb: 0;
+
+	in-out property <int> primary: 0;
+	in-out property <int> power_up: 0;
+	in-out property <int> redundant: 0;
 }
 
 export component ScoreWindow inherits Window {
 
-    title: "CTEC In-House Challenge";
+	title: "CTEC In-House Challenge";
 
-    default-font-family: "Roboto";
+	default-font-family: "Roboto";
 
-    width: 1536px;
-    height: 864px;
+	width: 1536px;
+	height: 864px;
 
-    background: #000;
+	background: #000;
 
-    HorizontalLayout {
-        padding-top: 5px;
-        padding-left: 5px;
-        padding-right: 5px;
-        padding-bottom: 5px;
+	if (vars.current_menu == 0) :
+		Rectangle {
+			HorizontalLayout {
+				padding-top: 5px;
+				padding-left: 5px;
+				padding-right: 5px;
+				padding-bottom: 5px;
+		
+				VerticalLayout {
+					HorizontalLayout {
+						spacing: 5px;
+						Rectangle {
+							border-top-left-radius: 30px;
+							border-top-right-radius: 30px;
+							width: 33.333%;
+							height: theme.ALLIANCE_HEIGHT;
+							background: blue;
+							Text {
+								font-size: theme.H;
+								padding: 5px;
+								color: white;
+								text: "Blue Alliance";
+							}
+						}
+						Rectangle {
+							border-top-left-radius: 30px;
+							border-top-right-radius: 30px;
+							width: 33.333%;
+							height: theme.SOCRE_HEIGHT;
+							background: white;
+							Text {
+								font-size: theme.H;
+								color: black;
+								text: "Score Breakdown";
+							}
+						}
+						Rectangle {
+							border-top-left-radius: 30px;
+							border-top-right-radius: 30px;
+							width: 33.333%;
+							height: theme.ALLIANCE_HEIGHT;
+							background: red;
+							Text {
+								font-size: theme.H;
+								padding: 5px;
+								color: white;
+								text: "Red Alliance";
+							}
+						}
+					}
+		
+					HorizontalLayout {
+						spacing: 5px;
+						Rectangle {
+							width: 33.333%;
+							height: theme.TEAM_HEIGHT;
+							background: blue;
+							Text {
+								y: 1px;
+								font-size: theme.ALLIANCE_NAME;
+								padding: 5px;
+								color: white;
+								text: vars.blue_team1 + "    " + vars.blue_team2;
+							}
+							Text {
+								y: 40px;
+								font-size: theme.ALLIANCE_NAME - 7px;
+								padding: 5px;
+								color: white;
+								text: vars.blue_team1_members + "            " + vars.blue_team2_members;
+							}
+						}
+						Rectangle {
+							background: white;
+							width: 33.333%;
+							Text {
+								y: 1px;
+								color: black;
+								font-size: 45px;
+								text: "Match: " + vars.matchNumber;
+							}
+						}
+						Rectangle {
+							width: 33.333%;
+							height: theme.TEAM_HEIGHT;
+							background: red;
+							Text {
+								y: 1px;
+								font-size: theme.ALLIANCE_NAME;
+								padding: 5px;
+								color: white;
+								text: vars.red_team1 + "    " + vars.red_team2;
+							}
+							Text {
+								y: 40px;
+								font-size: theme.ALLIANCE_NAME - 7px;
+								padding: 5px;
+								color: white;
+								text: vars.red_team1_members + "            " + vars.red_team2_members;
+							}
+						}
+					}
+		
+					HorizontalLayout {
+						spacing: 5px;
+						Rectangle {
+							border-bottom-left-radius: 30px;
+							border-bottom-right-radius: 30px;
+							width: 33.333%;
+							height: 12%;
+							background: blue;
+							Text {
+								y: parent.y /2;
+								font-size: theme.ALLIANCE_SCORE;
+								padding: 1px;
+								color: white;
+								text: vars.blue_score;
+							}
+						}
+						Rectangle {
+							background: white;
+							width: 33.333%;
+							Text {
+								y: 1px;
+								color: black;
+								font-size: 45px;
+								text: "2:30";
+							}
+						}
+						Rectangle {
+							border-bottom-left-radius: 30px;
+							border-bottom-right-radius: 30px;
+							width: 33.333%;
+							height: theme.TEAM_HEIGHT;
+							background: red;
+							Text {
+								y: parent.y /2;
+								font-size: theme.ALLIANCE_SCORE;
+								padding: 1px;
+								color: white;
+								text: vars.red_score;
+							}
+						}
+					}
+				}
+			}
+			HorizontalLayout {
+				padding-top: 5px;
+				padding-left: 5px;
+				padding-right: 5px;
+				padding-bottom: 5px;
+		
+				VerticalLayout {
+					HorizontalLayout {
+						spacing: 5px;
+						Rectangle {
+							border-top-left-radius: 30px;
+							border-top-right-radius: 30px;
+							width: 33.333%;
+							height: theme.ALLIANCE_HEIGHT;
+							background: blue;
+							Text {
+								font-size: theme.H;
+								padding: 5px;
+								color: white;
+								text: "Blue Alliance";
+							}
+						}
+						Rectangle {
+							border-top-left-radius: 30px;
+							border-top-right-radius: 30px;
+							width: 33.333%;
+							height: theme.SOCRE_HEIGHT;
+							background: white;
+							Text {
+								font-size: theme.H;
+								color: black;
+								text: "Score Breakdown";
+							}
+						}
+						Rectangle {
+							border-top-left-radius: 30px;
+							border-top-right-radius: 30px;
+							width: 33.333%;
+							height: theme.ALLIANCE_HEIGHT;
+							background: red;
+							Text {
+								font-size: theme.H;
+								padding: 5px;
+								color: white;
+								text: "Red Alliance";
+							}
+						}
+					}
+		
+					HorizontalLayout {
+						spacing: 5px;
+						Rectangle {
+							width: 33.333%;
+							height: theme.TEAM_HEIGHT;
+							background: blue;
+							Text {
+								y: 1px;
+								font-size: theme.ALLIANCE_NAME;
+								padding: 5px;
+								color: white;
+								text: vars.blue_team1 + "    " + vars.blue_team2;
+							}
+							Text {
+								y: 40px;
+								font-size: theme.ALLIANCE_NAME - 7px;
+								padding: 5px;
+								color: white;
+								text: vars.blue_team1_members + "            " + vars.blue_team2_members;
+							}
+						}
+						Rectangle {
+							background: white;
+							width: 33.333%;
+							Text {
+								y: 1px;
+								color: black;
+								font-size: 45px;
+								text: "Match: " + vars.matchNumber;
+							}
+						}
+						Rectangle {
+							width: 33.333%;
+							height: theme.TEAM_HEIGHT;
+							background: red;
+							Text {
+								y: 1px;
+								font-size: theme.ALLIANCE_NAME;
+								padding: 5px;
+								color: white;
+								text: vars.red_team1 + "    " + vars.red_team2;
+							}
+							Text {
+								y: 40px;
+								font-size: theme.ALLIANCE_NAME - 7px;
+								padding: 5px;
+								color: white;
+								text: vars.red_team1_members + "            " + vars.red_team2_members;
+							}
+						}
+					}
+		
+					HorizontalLayout {
+						spacing: 5px;
+						Rectangle {
+							border-bottom-left-radius: 30px;
+							border-bottom-right-radius: 30px;
+							width: 33.333%;
+							height: 12%;
+							background: blue;
+							Text {
+								y: parent.y /2;
+								font-size: theme.ALLIANCE_SCORE;
+								padding: 1px;
+								color: white;
+								text: vars.blue_score;
+							}
+						}
+						Rectangle {
+							background: white;
+							width: 33.333%;
+							Text {
+								y: 1px;
+								color: black;
+								font-size: 45px;
+								//font-size: 10px;
+								text: "2:30";//score.park + " " + score.auto_ground + " " + score.auto_beacon + " " + score.auto_center + " " + score.auto_L1 + " " + score.auto_L2 + " " + score.auto_L3 + " " + score.ground + " " + score.beacon + " " + score.center + " " + score.L1 + " " + score.L2 + " " + score.L3 + " " + score.end_park + " " + score.climb;
+							}
+						}
+						Rectangle {
+							border-bottom-left-radius: 30px;
+							border-bottom-right-radius: 30px;
+							width: 33.333%;
+							height: theme.TEAM_HEIGHT;
+							background: red;
+							Text {
+								y: parent.y /2;
+								font-size: theme.ALLIANCE_SCORE;
+								padding: 1px;
+								color: white;
+								text: vars.red_score;
+							}
+						}
+					}
+				}
+			}
 
-        VerticalLayout {
-            HorizontalLayout {
-                spacing: 5px;
-                Rectangle {
-                    border-top-left-radius: 30px;
-                    border-top-right-radius: 30px;
-                    width: 33.333%;
-                    height: theme.ALLIANCE_HEIGHT;
-                    background: blue;
-                    Text {
-                        font-size: theme.H;
-                        padding: 5px;
-                        color: white;
-                        text: "Blue Alliance";
-                    }
-                }
-                Rectangle {
-                    border-top-left-radius: 30px;
-                    border-top-right-radius: 30px;
-                    width: 33.333%;
-                    height: theme.SOCRE_HEIGHT;
-                    background: white;
-                    Text {
-                        font-size: theme.H;
-                        color: black;
-                        text: "Score Breakdown";
-                    }
-                }
-                Rectangle {
-                    border-top-left-radius: 30px;
-                    border-top-right-radius: 30px;
-                    width: 33.333%;
-                    height: theme.ALLIANCE_HEIGHT;
-                    background: red;
-                    Text {
-                        font-size: theme.H;
-                        padding: 5px;
-                        color: white;
-                        text: "Red Alliance";
-                    }
-                }
-            }
+		}
+	if (vars.current_menu == 1) :
+		Image {
+			source: @image-url("./assets/StellerConstruction.png");
+			image-fit: contain;
+		}
 
-            HorizontalLayout {
-                spacing: 5px;
-                Rectangle {
-                    width: 33.333%;
-                    height: theme.TEAM_HEIGHT;
-                    background: blue;
-                    Text {
-                        y: 1px;
-                        font-size: theme.ALLIANCE_NAME;
-                        padding: 5px;
-                        color: white;
-                        text: vars.blue_team1 + "    " + vars.blue_team2;
-                    }
-                    Text {
-                        y: 40px;
-                        font-size: theme.ALLIANCE_NAME - 7px;
-                        padding: 5px;
-                        color: white;
-                        text: vars.blue_team1_members + "            " + vars.blue_team2_members;
-                    }
-                }
-                Rectangle {
-                    background: white;
-                    width: 33.333%;
-                    Text {
-                        y: 1px;
-                        color: black;
-                        font-size: 45px;
-                        text: "Match: " + vars.matchNumber;
-                    }
-                }
-                Rectangle {
-                    width: 33.333%;
-                    height: theme.TEAM_HEIGHT;
-                    background: red;
-                    Text {
-                        y: 1px;
-                        font-size: theme.ALLIANCE_NAME;
-                        padding: 5px;
-                        color: white;
-                        text: vars.red_team1 + "    " + vars.red_team2;
-                    }
-                    Text {
-                        y: 40px;
-                        font-size: theme.ALLIANCE_NAME - 7px;
-                        padding: 5px;
-                        color: white;
-                        text: vars.red_team1_members + "            " + vars.red_team2_members;
-                    }
-                }
-            }
-
-            HorizontalLayout {
-                spacing: 5px;
-                Rectangle {
-                    border-bottom-left-radius: 30px;
-                    border-bottom-right-radius: 30px;
-                    width: 33.333%;
-                    height: 12%;
-                    background: blue;
-                    Text {
-                        y: parent.y /2;
-                        font-size: theme.ALLIANCE_SCORE;
-                        padding: 1px;
-                        color: white;
-                        text: vars.blue_score;
-                    }
-                }
-                Rectangle {
-                    background: white;
-                    width: 33.333%;
-                    Text {
-                        y: 1px;
-                        color: black;
-                        font-size: 45px;
-                        text: "";
-                    }
-                }
-                Rectangle {
-                    border-bottom-left-radius: 30px;
-                    border-bottom-right-radius: 30px;
-                    width: 33.333%;
-                    height: theme.TEAM_HEIGHT;
-                    background: red;
-                    Text {
-                        y: parent.y /2;
-                        font-size: theme.ALLIANCE_SCORE;
-                        padding: 1px;
-                        color: white;
-                        text: vars.red_score;
-                    }
-                }
-            }
-        }
-    }
 }
 
 export component ControlWindow inherits Window {
-    //width: 800px;
-    //height: 480px;
-    background: gray;
+	callback switch_tab(int);
 
-    title: "CTEC - Control";
-    //background: @image-url("./assets/StellerConstruction.png");
-    icon: @image-url("./assets/StellerConstruction.png");
-    Image {
-        source: @image-url("./assets/StellerConstruction.png");
-        image-fit: contain;
-    }
+	width: 960px;
+	height: 900px;
+	background: gray;
 
-    VerticalLayout {
-        spacing: 10px;
-        padding: 10px;
-        Rectangle {
-            opacity: 0.95;
-            height: 25px;
+	title: "CTEC - Control";
+	//background: @image-url("./assets/StellerConstruction.png");
+	icon: @image-url("./assets/StellerConstruction.png");
+	Image {
+		source: @image-url("./assets/StellerConstruction.png");
+		image-fit: contain;
+	}
 
-            background: black;
-            border-radius: 10px;
-            border-width: 1px;
-            border-color: darkblue;
-            
-            Text {text: "Control Window"; color: white;}
-        }
-        Rectangle {
-            height: 55px;
+	VerticalLayout {
+		spacing: 10px;
+		padding: 10px;
+		Rectangle {
+			opacity: 0.95;
+			height: 25px;
 
-            background: black;
-            border-radius: 10px;
-            border-width: 1px;
-            border-color: darkblue;
+			background: black;
+			border-radius: 10px;
+			border-width: 1px;
+			border-color: darkblue;
 
-            Text {text: "Match Managment " + vars.matchNumber; color: white; y: 3px;}
-            HorizontalLayout {
-                y: parent.height * 0.085;
-                Rectangle {Text {text: "Match Number:";}}
-                Rectangle {
-                    width: 150px;
-                    SpinBox {
-                        maximum: vars.max_matches;
-                        minimum: 1;
-                        value <=> vars.matchNumber;
-                    }
-                }
-            }
-        }
-        Rectangle {
-            height: 120px;
+			Text {text: "Control Window"; //+ score.park + " " + score.auto_ground + " " + score.auto_beacon + " " + score.auto_center + " " + score.auto_L1 + " " + score.auto_L2 + " " + score.auto_L3 + " " + score.ground + " " + score.beacon + " " + score.center + " " + score.L1 + " " + score.L2 + " " + score.L3 + " " + score.end_park + " " + score.climb; 
+			color: white;}
+		}
+		Rectangle {
+			height: 55px;
 
-            background: black;
-            border-radius: 10px;
-            border-width: 1px;
-            border-color: darkblue;
+			background: black;
+			border-radius: 10px;
+			border-width: 1px;
+			border-color: darkblue;
 
-            Text {text: "Auto Score"; color: white; y: 3px;}
-            HorizontalLayout {
-                y: parent.height * 0.085;
-                padding: 20px;
-                spacing: 20px;
-                Rectangle {
-                    border-radius: 10px;
-                    border-width: 4px;
-                    border-color: darkblue;
-                    Text {
-                        y: 10px;
-                        text: "Blue";
-                    }
-                }
-                Rectangle {
-                    border-radius: 10px;
-                    border-width: 4px;
-                    border-color: darkred;
-                    Text {
-                        y: 10px;
-                        text: "Red";
-                    }
-                }
-            }
-        }
-    }
+			Text {text: "Match Managment " + vars.matchNumber; color: white; y: 3px;}
+			HorizontalLayout {
+				alignment: space-around;
+				spacing: 20px;
+				y: parent.height * 0.085;
+
+				Button {text: "Match"; width: 60px; height: 35px; y: parent.y / 2; clicked => {switch_tab(0);}}
+				Button {text: "Rank"; width: 60px; height: 35px; y: parent.y / 2; clicked => {switch_tab(1);}}
+				Button {text: "Alliance Selection"; width: 130px; height: 35px; y: parent.y / 2; clicked => {switch_tab(2);}}
+
+				Button {text: "Start"; width: 60px; height: 35px; y: parent.y / 2; clicked => {}}
+				Button {text: "Pause"; width: 60px; height: 35px; y: parent.y / 2; clicked => {}}
+				Button {text: "Reset"; width: 60px; height: 35px; y: parent.y / 2; clicked => {}}
+
+				Rectangle {Text {text: "Match Number:";}}
+				Rectangle {
+					width: 150px;
+					SpinBox {
+						maximum: vars.max_matches;
+						minimum: 1;
+						value <=> vars.matchNumber;
+					}
+				}
+			}
+		}
+	}
+		TabWidget {
+
+			Tab {
+				title: "Scoring";
+
+				VerticalLayout {
+                    Rectangle {height: 10px;}
+                    Rectangle {
+        	    	    height: 300px;
+
+        	    	    background: black;
+        	    	    border-radius: 10px;
+        	    	    border-width: 1px;
+        	    	    border-color: darkblue;
+
+        	    	    Text {text: "Auto Score"; color: white; y: 3px;}
+        	    	    HorizontalLayout {
+        	    	        y: 10px;
+        	    	        height: 295px;
+        	    	        padding: 20px;
+        	    	        spacing: 20px;
+        	    	        Rectangle {
+        	    	            width: 46%;
+        	    	            border-radius: 10px;
+        	    	            border-width: 4px;
+        	    	            border-color: darkblue;
+        	    	            Text {
+        	    	                y: 10px;
+        	    	                text: "Blue";
+        	    	            }
+        	    	            VerticalBox {
+        	    	                padding-top: 30px;
+        	    	                padding: 25px;
+        	    	                HorizontalLayout {Text {text: "Park";} CheckBox { toggled => {score_blue.park += 6;} } Rectangle{width: 44px;} CheckBox { toggled => {score_blue.park += 6;} }
+									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_blue.auto_ground = self.value * 4;}}}
+        	    	                HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_blue.auto_beacon = self.value * 8;}}}
+        	    	                HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_blue.auto_center = self.value * 10;}}}
+        	    	                HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_blue.auto_L1 = self.value * 6;}}}	
+        	    	                HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_blue.auto_L2 = self.value * 8;}}}
+        	    	                HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_blue.auto_L3 = self.value * 10;}}}
+        	    	            }
+        	    	        }
+        	    	        Rectangle {
+        	    	            border-radius: 10px;
+        	    	            border-width: 4px;
+        	    	            border-color: darkred;
+        	    	            Text {
+        	    	                y: 10px;
+        	    	                text: "Red";
+        	    	            }
+        	    	            VerticalBox {
+        	    	                padding-top: 30px;
+        	    	                padding: 25px;
+        	    	                HorizontalLayout {Text {text: "Park";} CheckBox { toggled => {score_red.park += 6;} } Rectangle{width: 44px;} CheckBox { toggled => {score_red.park += 6;} }
+									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_red.auto_ground = self.value * 4;}}}
+        	    	                HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_red.auto_beacon = self.value * 8;}}}
+        	    	                HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_red.auto_center = self.value * 10;}}}
+        	    	                HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_red.auto_L1 = self.value * 6;}}}	
+        	    	                HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_red.auto_L2 = self.value * 8;}}}
+        	    	                HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_red.auto_L3 = self.value * 10;}}}
+        	    	            }
+        	    	        }
+        	    	    }
+        	    	}	
+        		}
+		
+        		Rectangle {
+					y: 325px;
+        		    height: 300px;
+				
+        		    background: black;
+        		    border-radius: 10px;
+        		    border-width: 1px;
+        		    border-color: darkblue;
+				
+        		    Text {text: "Teleop Score"; color: white; y: 3px;}
+        		    HorizontalLayout {
+        		        y: 10px;
+        		        height: 295px;
+        		        padding: 20px;
+        		        spacing: 20px;
+        		        Rectangle {
+        		            width: 46%;
+        		            border-radius: 10px;
+        		            border-width: 4px;
+        		            border-color: darkblue;
+        		            Text {
+        		                y: 10px;
+        		                text: "Blue";
+        		            }
+        		            VerticalBox {
+        		                padding-top: 30px;
+        		                padding: 25px;
+								HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_blue.ground = self.value * 2;}}}
+        		                HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_blue.beacon = self.value * 4;}}}
+        		                HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_blue.center = self.value * 5;}}}
+        		                HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_blue.L1 = self.value * 3;}}}
+        		                HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_blue.L2 = self.value * 4;}}}
+        		                HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_blue.L3 = self.value * 5;}}}
+        		            }
+        		        }
+        		        Rectangle {
+        		            border-radius: 10px;
+        		            border-width: 4px;
+        		            border-color: darkred;
+        		            Text {
+        		                y: 10px;
+        		                text: "Red";
+        		            }
+        		            VerticalBox {
+        		                padding-top: 30px;
+        		                padding: 25px;
+								HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_red.ground = self.value * 2;}}}
+        		                HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_red.beacon = self.value * 4;}}}
+        		                HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_red.center = self.value * 5;}}}
+        		                HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_red.L1 = self.value * 3;}}}
+        		                HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_red.L2 = self.value * 4;}}}
+        		                HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_red.L3 = self.value * 5;}}}
+        		            }
+        		        }
+        		    }
+        		}
+				Rectangle {
+					y: 635px;
+					height: 110px;
+				
+        		    background: black;
+        		    border-radius: 10px;
+        		    border-width: 1px;
+        		    border-color: darkblue;
+
+					Text {text: "Endgame"; color: white; y: 3px;}
+					HorizontalLayout {
+        		        y: 1px;
+        		        height: 40px;
+        		        padding: 20px;
+        		        spacing: 20px;
+        		        Rectangle {
+        		            width: 46%;
+        		            border-radius: 10px;
+        		            border-width: 4px;
+        		            border-color: darkblue;
+        		            Text {
+        		                y: 10px;
+        		                text: "Blue";
+        		            }
+        		            VerticalBox {
+        		                padding-top: 30px;
+        		                padding: 25px;
+        		                HorizontalLayout {Text {text: "Park";} CheckBox {toggled => {score_blue.end_park += 2;}} Rectangle{width: 44px;}CheckBox {toggled => {score_blue.end_park += 2;}}}
+								HorizontalLayout {Text {text: "Climb";} CheckBox {toggled => {score_blue.climb += 20;}} Rectangle{width: 44px;}CheckBox {toggled => {score_blue.climb += 20;}}}
+        		            }
+        		        }
+        		        Rectangle {
+        		            border-radius: 10px;
+        		            border-width: 4px;
+        		            border-color: darkred;
+        		            Text {
+        		                y: 10px;
+        		                text: "Red";
+        		            }
+        		            VerticalBox {
+        		                padding-top: 30px;
+        		                padding: 25px;
+        		                HorizontalLayout {Text {text: "Park";} CheckBox {toggled => {score_red.end_park += 2;}} Rectangle{width: 44px;}CheckBox {toggled => {score_red.end_park += 2;}}}
+								HorizontalLayout {Text {text: "Climb";} CheckBox {toggled => {score_red.climb += 20;}} Rectangle{width: 44px;}CheckBox {toggled => {score_red.climb += 20;}}}
+        		            }
+        		        }
+        		    }
+				}
+			}
+
+		}
+	}
+	Tab {
+		title: "Alliance Selection";
+
+		VerticalLayout {
+			HorizontalLayout {Text {text: "Renk 1:";} Text {text: "";}}
+		}
+	}
+
+	Tab {
+		title: "Bonus Scoring";
+
+		VerticalLayout {
+			Rectangle {height: 10px;}
+			Rectangle {
+				height: 300px;
+
+				background: black;
+				border-radius: 10px;
+				border-width: 1px;
+				border-color: darkblue;
+
+				Text {text: "Bonus"; color: white; y: 3px;}
+				HorizontalLayout {
+					y: 10px;
+					height: 295px;
+					padding: 20px;
+					spacing: 20px;
+					Rectangle {
+						width: 46%;
+						border-radius: 10px;
+						border-width: 4px;
+						border-color: darkblue;
+						Text {
+							y: 10px;
+							text: "Blue";
+						}
+						VerticalBox {
+							padding-top: 30px;
+							padding: 25px;
+							HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_blue.primary = self.value;}}}	
+							HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_blue.power_up = self.value;}}}
+							HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_blue.redundant = self.value;}}}
+						}
+					}
+					Rectangle {
+						border-radius: 10px;
+						border-width: 4px;
+						border-color: darkred;
+						Text {
+							y: 10px;
+							text: "Red";
+						}
+						VerticalBox {
+							padding-top: 30px;
+							padding: 25px;
+							HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_red.primary = self.value;}}}	
+							HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_red.power_up = self.value;}}}
+							HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_red.redundant = self.value;}}}
+						}
+					}
+				}
+			}	
+		}
+	}
+}
 }

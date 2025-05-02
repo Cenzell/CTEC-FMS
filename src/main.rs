@@ -1,6 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use std::error::Error;
-use std::rc::Rc;
+use std::{error::Error, rc::Rc};
 use std::time::Duration;
 use slint::{Model, VecModel};
 
@@ -15,6 +14,7 @@ struct Team {
     wins: u8,
     losses: u8,
     ties: u8,
+    average_score: u8,
     rp: u8,
 }
 
@@ -32,15 +32,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     let score_ui_weak = score_ui.as_weak();
     let control_ui_weak = control_ui.as_weak();
 
+    control_ui.on_switch_tab({
+        let score_ui_weak = score_ui_weak.clone();
+        move |new_index| {
+            if let Some(w2) = score_ui_weak.upgrade() {
+                w2.global::<vars>().set_current_menu(new_index);
+            }
+        }
+    });
+
     let team_data = Rc::new(VecModel::from(vec![
-        Team { number: 1, name: "Deuce".into(), members: "Ian - JT".into(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0 },
-        Team { number: 2, name: "FreakBot 9000".into(), members: "Logan - Bennett".into(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
-        Team { number: 3, name: "JPC".to_string(), members: "Sam - Xavier".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
-        Team { number: 4, name: "Cooper Bot".to_string(), members: "John - Scott".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
-        Team { number: 5, name: "Fat Man".to_string(), members: "Austin - Evan".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
-        Team { number: 6, name: "Tau".to_string(), members: "Fabian - Tanav - Cru".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
-        Team { number: 7, name: "'Might' Blow Up".to_string(), members: "Andrew - Jack - Jackson L".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
-        Team { number: 8, name: "Phi".to_string(), members: "Jesse - Zach - Drew".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, rp: 0},
+        Team { number: 1, name: "Deuce 🎾".into(), members: "Ian - JT".into(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0 },
+        Team { number: 2, name: "FreakBot 9000".into(), members: "Logan - Bennett".into(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
+        Team { number: 3, name: "JPC".to_string(), members: "Sam - Xavier".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
+        Team { number: 4, name: "Cooper Bot".to_string(), members: "John - Scott".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
+        Team { number: 5, name: "Fat Man".to_string(), members: "Austin - Evan".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
+        Team { number: 6, name: "Tau".to_string(), members: "Fabian - Tanav - Cru".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
+        Team { number: 7, name: "'Might' Blow Up".to_string(), members: "Andrew - Jack - Jackson L".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
+        Team { number: 8, name: "Sauron".to_string(), members: "Jesse - Zach - Drew".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
     ]));
 
     let match_schedule = vec![
@@ -55,6 +64,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Match { red_alliance: (0, 6), blue_alliance: (3, 5) },
         Match { red_alliance: (1, 7), blue_alliance: (2, 4) },
     ];
+
 
     // Set up a timer to check and sync matchNumber between windows
     let timer = slint::Timer::default();
@@ -93,6 +103,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                         score.global::<vars>().set_red_team2_members(red2.members.clone().into());
                         score.global::<vars>().set_blue_team1_members(blue1.members.clone().into());
                         score.global::<vars>().set_blue_team2_members(blue2.members.clone().into());
+
+                        //score.global::<vars>().set_blue_score();
+                        //score.global::<vars>().set_red_score();
                     }
                 }
 
