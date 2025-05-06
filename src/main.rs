@@ -22,6 +22,7 @@ struct Team {
 struct Match {
     red_alliance: (usize, usize),   // use usize to index into Vec
     blue_alliance: (usize, usize),
+    score: (i32, i32), // Red and Blue scoresq
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -41,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     });
 
-    let team_data = Rc::new(VecModel::from(vec![
+    let mut team_data = Rc::new(VecModel::from(vec![
         Team { number: 1, name: "Deuce 🎾".into(), members: "Ian - JT".into(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0 },
         Team { number: 2, name: "FreakBot 9000".into(), members: "Logan - Bennett".into(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
         Team { number: 3, name: "JPC".to_string(), members: "Sam - Xavier".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
@@ -53,18 +54,28 @@ fn main() -> Result<(), Box<dyn Error>> {
     ]));
 
     let match_schedule = vec![
-        Match { red_alliance: (0, 1), blue_alliance: (2, 3) },
-        Match { red_alliance: (4, 5), blue_alliance: (6, 7) },
-        Match { red_alliance: (0, 2), blue_alliance: (4, 6) },
-        Match { red_alliance: (1, 3), blue_alliance: (5, 7) },
-        Match { red_alliance: (0, 4), blue_alliance: (1, 5) },
-        Match { red_alliance: (2, 6), blue_alliance: (3, 7) },
-        Match { red_alliance: (0, 5), blue_alliance: (2, 7) },
-        Match { red_alliance: (1, 6), blue_alliance: (3, 4) },
-        Match { red_alliance: (0, 6), blue_alliance: (3, 5) },
-        Match { red_alliance: (1, 7), blue_alliance: (2, 4) },
+        Match { red_alliance: (0, 1), blue_alliance: (2, 3), score: (0, 0)},
+        Match { red_alliance: (4, 5), blue_alliance: (6, 7), score: (0, 0)},
+        Match { red_alliance: (0, 2), blue_alliance: (4, 6), score: (0, 0)},
+        Match { red_alliance: (1, 3), blue_alliance: (5, 7), score: (0, 0)},
+        Match { red_alliance: (0, 4), blue_alliance: (1, 5), score: (0, 0)},
+        Match { red_alliance: (2, 6), blue_alliance: (3, 7), score: (0, 0)},
+        Match { red_alliance: (0, 5), blue_alliance: (2, 7), score: (0, 0)},
+        Match { red_alliance: (1, 6), blue_alliance: (3, 4), score: (0, 0)},
+        Match { red_alliance: (0, 6), blue_alliance: (3, 5), score: (0, 0)},
+        Match { red_alliance: (1, 7), blue_alliance: (2, 4), score: (0, 0)},
     ];
 
+    let mut blue_auto: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut red_auto: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut blue_grid: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut red_grid: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut blue_array: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut red_array: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut blue_endgame: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut red_endgame: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut blue_bonus: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut red_bonus: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
     // Set up a timer to check and sync matchNumber between windows
     let timer = slint::Timer::default();
@@ -88,6 +99,26 @@ fn main() -> Result<(), Box<dyn Error>> {
 
                     let teams_borrowed = teams.clone(); // optional if already in scope
 
+                    blue_auto[match_num as usize - 1] = control.global::<score_blue>().get_auto_ground() + control.global::<score_blue>().get_auto_beacon() + control.global::<score_blue>().get_auto_center() + control.global::<score_blue>().get_auto_L1() + control.global::<score_blue>().get_auto_L2() + control.global::<score_blue>().get_auto_L3() + control.global::<score_blue>().get_ground();
+                    red_auto[match_num as usize - 1] = control.global::<score_red>().get_auto_ground() + control.global::<score_red>().get_auto_beacon() + control.global::<score_red>().get_auto_center() + control.global::<score_red>().get_auto_L1() + control.global::<score_red>().get_auto_L2() + control.global::<score_red>().get_auto_L3() + control.global::<score_red>().get_ground();
+
+                    blue_grid[match_num as usize - 1] = control.global::<score_blue>().get_L1() + control.global::<score_blue>().get_L2() + control.global::<score_blue>().get_L3();
+                    red_grid[match_num as usize - 1] = control.global::<score_red>().get_L1() + control.global::<score_red>().get_L2() + control.global::<score_red>().get_L3();
+
+                    blue_array[match_num as usize - 1] = control.global::<score_blue>().get_ground() + control.global::<score_blue>().get_beacon() + control.global::<score_blue>().get_center();
+                    red_array[match_num as usize - 1] = control.global::<score_red>().get_ground() + control.global::<score_red>().get_beacon() + control.global::<score_red>().get_center();
+
+                    blue_bonus[match_num as usize - 1] = control.global::<score_blue>().get_primary() + control.global::<score_blue>().get_power_up() + control.global::<score_blue>().get_redundant();
+                    red_bonus[match_num as usize - 1] = control.global::<score_red>().get_primary() + control.global::<score_red>().get_power_up() + control.global::<score_red>().get_redundant();
+
+                    blue_endgame[match_num as usize - 1] = control.global::<score_blue>().get_end_park() + control.global::<score_blue>().get_climb();
+                    red_endgame[match_num as usize - 1] = control.global::<score_red>().get_end_park() + control.global::<score_red>().get_climb();
+
+                    let blue_score = blue_auto[match_num as usize - 1] + blue_grid[match_num as usize - 1] + blue_array[match_num as usize - 1] + blue_endgame[match_num as usize - 1] + blue_bonus[match_num as usize - 1];
+                    let red_score = red_auto[match_num as usize - 1] + red_grid[match_num as usize - 1] + red_array[match_num as usize - 1] + red_endgame[match_num as usize - 1] + red_bonus[match_num as usize - 1];
+
+
+
                     if let (Some(red1), Some(red2), Some(blue1), Some(blue2)) = (
                         teams_borrowed.row_data(current_match.red_alliance.0),
                         teams_borrowed.row_data(current_match.red_alliance.1),
@@ -104,8 +135,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                         score.global::<vars>().set_blue_team1_members(blue1.members.clone().into());
                         score.global::<vars>().set_blue_team2_members(blue2.members.clone().into());
 
-                        //score.global::<vars>().set_blue_score();
-                        //score.global::<vars>().set_red_score();
+                        score.global::<display_score>().set_blue_auto(blue_auto[match_num as usize - 1]);
+                        score.global::<display_score>().set_red_auto(red_auto[match_num as usize - 1]);
+
+                        score.global::<vars>().set_blue_score(blue_score);
+                        score.global::<vars>().set_red_score(red_score);
                     }
                 }
 

@@ -80,14 +80,34 @@ export global score_red {
 	in-out property <int> redundant: 0;
 }
 
+export global display_score {
+	in-out property <int> blue_auto: 0;
+	in-out property <int> red_auto: 0;
+
+	in-out property <int> blue_score: 0;
+	in-out property <int> red_score: 0;
+
+	in-out property <int> blue_array: 0;
+	in-out property <int> red_array: 0;
+
+	in-out property <int> blue_grid: 0;
+	in-out property <int> red_grid: 0;
+
+	in-out property <int> blue_endgame: 0;
+	in-out property <int> red_endgame: 0;
+
+	in-out property <int> blue_bonus: 0;
+	in-out property <int> red_bonus: 0;
+} 
+
 export component ScoreWindow inherits Window {
 
 	title: "CTEC In-House Challenge";
 
 	default-font-family: "Roboto";
 
-	width: 1536px;
-	height: 864px;
+	width: 1920px;
+	height: 1080px;
 
 	background: #000;
 
@@ -380,17 +400,65 @@ export component ScoreWindow inherits Window {
 							}
 						}
 					}
+
+					HorizontalLayout {
+						spacing: 5px;
+						Rectangle {
+							width: 33.333%;
+						}
+						Rectangle {
+							background: white;
+							width: 33.333%;
+							height: 500px;
+							border-bottom-left-radius: 30px;
+							border-bottom-right-radius: 30px;
+							HorizontalLayout {
+								VerticalLayout {
+									padding: 20px;
+	
+									property <length> text_height: 30px;
+									Text {text: display_score.blue_auto; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.blue_array; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.blue_grid; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.blue_endgame; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.blue_bonus; color: black; font-size: text_height; horizontal-alignment: center;}
+								}
+								VerticalLayout {
+									padding: 20px;
+									spacing: 20px;
+	
+									property <length> text_height: 30px;
+									Text {text: "Auto"; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: "Communication Array"; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: "Resource Grids"; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: "Endgame"; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: "Bonus"; color: black; font-size: text_height; horizontal-alignment: center;}
+								}
+								VerticalLayout {
+									padding: 20px;
+									spacing: 20px;
+	
+									property <length> text_height: 30px;
+									Text {text: display_score.red_auto; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.red_array; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.red_grid; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.red_endgame; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.red_bonus; color: black; font-size: text_height; horizontal-alignment: center;}
+								}
+							}
+						}
+						Rectangle {
+							width: 33.333%;
+					}
 				}
 			}
-
 		}
 	if (vars.current_menu == 1) :
 		Image {
 			source: @image-url("./assets/StellerConstruction.png");
 			image-fit: contain;
 		}
-
-}
+}}
 
 export component ControlWindow inherits Window {
 	callback switch_tab(int);
@@ -455,11 +523,179 @@ export component ControlWindow inherits Window {
 				}
 			}
 		}
-	}
 		TabWidget {
-
 			Tab {
 				title: "Scoring";
+
+				VerticalLayout {
+					Rectangle {height: 10px;}
+					Rectangle {
+						height: 300px;
+
+						background: black;
+						border-radius: 10px;
+						border-width: 1px;
+						border-color: darkblue;
+
+						Text {text: "Auto Score"; color: white; y: 3px;}
+						HorizontalLayout {
+							y: 10px;
+							height: 295px;
+							padding: 20px;
+							spacing: 20px;
+							Rectangle {
+								width: 46%;
+								border-radius: 10px;
+								border-width: 4px;
+								border-color: darkblue;
+								Text {
+									y: 10px;
+									text: "Blue";
+								}
+								VerticalBox {
+									padding-top: 30px;
+									padding: 25px;
+									HorizontalLayout {Text {text: "Park";} CheckBox { toggled => {score_blue.park += 6;} } Rectangle{width: 44px;} CheckBox { toggled => {score_blue.park += 6;}}}
+									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_blue.auto_ground = self.value * 4;}}}
+									HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_blue.auto_beacon = self.value * 8;}}}
+									HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_blue.auto_center = self.value * 10;}}}
+									HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_blue.auto_L1 = self.value * 6;}}}	
+									HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_blue.auto_L2 = self.value * 8;}}}
+									HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_blue.auto_L3 = self.value * 10;}}}
+								}
+							}
+							Rectangle {
+								border-radius: 10px;
+								border-width: 4px;
+								border-color: darkred;
+								Text {
+									y: 10px;
+									text: "Red";
+								}
+								VerticalBox {
+									padding-top: 30px;
+									padding: 25px;
+									HorizontalLayout {Text {text: "Park";} CheckBox { toggled => {score_red.park += 6;} } Rectangle{width: 44px;} CheckBox { toggled => {score_red.park += 6;}}}
+									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_red.auto_ground = self.value * 4;}}}
+									HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_red.auto_beacon = self.value * 8;}}}
+									HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_red.auto_center = self.value * 10;}}}
+									HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_red.auto_L1 = self.value * 6;}}}	
+									HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_red.auto_L2 = self.value * 8;}}}
+									HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_red.auto_L3 = self.value * 10;}}}
+								}
+							}
+						}
+					}	
+				}
+		
+				Rectangle {
+					y: 325px;
+					height: 300px;
+				
+					background: black;
+					border-radius: 10px;
+					border-width: 1px;
+					border-color: darkblue;
+				
+					Text {text: "Teleop Score"; color: white; y: 3px;}
+					HorizontalLayout {
+						y: 10px;
+						height: 295px;
+						padding: 20px;
+						spacing: 20px;
+						Rectangle {
+							width: 46%;
+							border-radius: 10px;
+							border-width: 4px;
+							border-color: darkblue;
+							Text {
+								y: 10px;
+								text: "Blue";
+							}
+							VerticalBox {
+								padding-top: 30px;
+								padding: 25px;
+								HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_blue.ground = self.value * 2;}}}
+								HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_blue.beacon = self.value * 4;}}}
+								HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_blue.center = self.value * 5;}}}
+								HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_blue.L1 = self.value * 3;}}}
+								HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_blue.L2 = self.value * 4;}}}
+								HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_blue.L3 = self.value * 5;}}}
+							}
+						}
+						Rectangle {
+							border-radius: 10px;
+							border-width: 4px;
+							border-color: darkred;
+							Text {
+								y: 10px;
+								text: "Red";
+							}
+							VerticalBox {
+								padding-top: 30px;
+								padding: 25px;
+								HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_red.ground = self.value * 2;}}}
+								HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_red.beacon = self.value * 4;}}}
+								HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_red.center = self.value * 5;}}}
+								HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_red.L1 = self.value * 3;}}}
+								HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_red.L2 = self.value * 4;}}}
+								HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_red.L3 = self.value * 5;}}}
+							}
+						}
+					}
+				}
+				Rectangle {
+					y: 635px;
+					height: 110px;
+				
+					background: black;
+					border-radius: 10px;
+					border-width: 1px;
+					border-color: darkblue;
+
+					Text {text: "Endgame"; color: white; y: 3px;}
+					HorizontalLayout {
+						y: 1px;
+						height: 40px;
+						padding: 20px;
+						spacing: 20px;
+						Rectangle {
+							width: 46%;
+							border-radius: 10px;
+							border-width: 4px;
+							border-color: darkblue;
+							Text {
+								y: 10px;
+								text: "Blue";
+							}
+							VerticalBox {
+								padding-top: 30px;
+								padding: 25px;
+								HorizontalLayout {Text {text: "Park";} CheckBox {toggled => {score_blue.end_park += 2;}} Rectangle{width: 44px;}CheckBox {toggled => {score_blue.end_park += 2;}}}
+								HorizontalLayout {Text {text: "Climb";} CheckBox {toggled => {score_blue.climb += 20;}} Rectangle{width: 44px;}CheckBox {toggled => {score_blue.climb += 20;}}}
+							}
+						}
+						Rectangle {
+							border-radius: 10px;
+							border-width: 4px;
+							border-color: darkred;
+							Text {
+								y: 10px;
+								text: "Red";
+							}
+							VerticalBox {
+								padding-top: 30px;
+								padding: 25px;
+								HorizontalLayout {Text {text: "Park";} CheckBox {toggled => {score_red.end_park += 2;}} Rectangle{width: 44px;}CheckBox {toggled => {score_red.end_park += 2;}}}
+								HorizontalLayout {Text {text: "Climb";} CheckBox {toggled => {score_red.climb += 20;}} Rectangle{width: 44px;}CheckBox {toggled => {score_red.climb += 20;}}}
+							}
+						}
+					}
+				}
+			}
+
+			Tab {
+				title: "Bonus Scoring";
 
 				VerticalLayout {
                     Rectangle {height: 10px;}
@@ -471,7 +707,7 @@ export component ControlWindow inherits Window {
         	    	    border-width: 1px;
         	    	    border-color: darkblue;
 
-        	    	    Text {text: "Auto Score"; color: white; y: 3px;}
+        	    	    Text {text: "Bonus"; color: white; y: 3px;}
         	    	    HorizontalLayout {
         	    	        y: 10px;
         	    	        height: 295px;
@@ -489,13 +725,9 @@ export component ControlWindow inherits Window {
         	    	            VerticalBox {
         	    	                padding-top: 30px;
         	    	                padding: 25px;
-        	    	                HorizontalLayout {Text {text: "Park";} CheckBox { toggled => {score_blue.park += 6;} } Rectangle{width: 44px;} CheckBox { toggled => {score_blue.park += 6;} }
-									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_blue.auto_ground = self.value * 4;}}}
-        	    	                HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_blue.auto_beacon = self.value * 8;}}}
-        	    	                HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_blue.auto_center = self.value * 10;}}}
-        	    	                HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_blue.auto_L1 = self.value * 6;}}}	
-        	    	                HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_blue.auto_L2 = self.value * 8;}}}
-        	    	                HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_blue.auto_L3 = self.value * 10;}}}
+        	    	                HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_red.primary = self.value;}}}	
+        	    	                HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_red.power_up = self.value;}}}
+        	    	                HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_red.redundant = self.value;}}}
         	    	            }
         	    	        }
         	    	        Rectangle {
@@ -509,190 +741,22 @@ export component ControlWindow inherits Window {
         	    	            VerticalBox {
         	    	                padding-top: 30px;
         	    	                padding: 25px;
-        	    	                HorizontalLayout {Text {text: "Park";} CheckBox { toggled => {score_red.park += 6;} } Rectangle{width: 44px;} CheckBox { toggled => {score_red.park += 6;} }
-									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_red.auto_ground = self.value * 4;}}}
-        	    	                HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_red.auto_beacon = self.value * 8;}}}
-        	    	                HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_red.auto_center = self.value * 10;}}}
-        	    	                HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_red.auto_L1 = self.value * 6;}}}	
-        	    	                HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_red.auto_L2 = self.value * 8;}}}
-        	    	                HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_red.auto_L3 = self.value * 10;}}}
+        	    	                HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_red.primary = self.value;}}}	
+        	    	                HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_red.power_up = self.value;}}}
+        	    	                HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_red.redundant = self.value;}}}
         	    	            }
         	    	        }
         	    	    }
         	    	}	
         		}
-		
-        		Rectangle {
-					y: 325px;
-        		    height: 300px;
-				
-        		    background: black;
-        		    border-radius: 10px;
-        		    border-width: 1px;
-        		    border-color: darkblue;
-				
-        		    Text {text: "Teleop Score"; color: white; y: 3px;}
-        		    HorizontalLayout {
-        		        y: 10px;
-        		        height: 295px;
-        		        padding: 20px;
-        		        spacing: 20px;
-        		        Rectangle {
-        		            width: 46%;
-        		            border-radius: 10px;
-        		            border-width: 4px;
-        		            border-color: darkblue;
-        		            Text {
-        		                y: 10px;
-        		                text: "Blue";
-        		            }
-        		            VerticalBox {
-        		                padding-top: 30px;
-        		                padding: 25px;
-								HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_blue.ground = self.value * 2;}}}
-        		                HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_blue.beacon = self.value * 4;}}}
-        		                HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_blue.center = self.value * 5;}}}
-        		                HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_blue.L1 = self.value * 3;}}}
-        		                HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_blue.L2 = self.value * 4;}}}
-        		                HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_blue.L3 = self.value * 5;}}}
-        		            }
-        		        }
-        		        Rectangle {
-        		            border-radius: 10px;
-        		            border-width: 4px;
-        		            border-color: darkred;
-        		            Text {
-        		                y: 10px;
-        		                text: "Red";
-        		            }
-        		            VerticalBox {
-        		                padding-top: 30px;
-        		                padding: 25px;
-								HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_red.ground = self.value * 2;}}}
-        		                HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_red.beacon = self.value * 4;}}}
-        		                HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_red.center = self.value * 5;}}}
-        		                HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_red.L1 = self.value * 3;}}}
-        		                HorizontalLayout {Text {text: "L2";} SpinBox {width: 80px; changed value => {score_red.L2 = self.value * 4;}}}
-        		                HorizontalLayout {Text {text: "L3";} SpinBox {width: 80px; changed value => {score_red.L3 = self.value * 5;}}}
-        		            }
-        		        }
-        		    }
-        		}
-				Rectangle {
-					y: 635px;
-					height: 110px;
-				
-        		    background: black;
-        		    border-radius: 10px;
-        		    border-width: 1px;
-        		    border-color: darkblue;
+			}
+			Tab {
+				title: "Alliance Selection";
 
-					Text {text: "Endgame"; color: white; y: 3px;}
-					HorizontalLayout {
-        		        y: 1px;
-        		        height: 40px;
-        		        padding: 20px;
-        		        spacing: 20px;
-        		        Rectangle {
-        		            width: 46%;
-        		            border-radius: 10px;
-        		            border-width: 4px;
-        		            border-color: darkblue;
-        		            Text {
-        		                y: 10px;
-        		                text: "Blue";
-        		            }
-        		            VerticalBox {
-        		                padding-top: 30px;
-        		                padding: 25px;
-        		                HorizontalLayout {Text {text: "Park";} CheckBox {toggled => {score_blue.end_park += 2;}} Rectangle{width: 44px;}CheckBox {toggled => {score_blue.end_park += 2;}}}
-								HorizontalLayout {Text {text: "Climb";} CheckBox {toggled => {score_blue.climb += 20;}} Rectangle{width: 44px;}CheckBox {toggled => {score_blue.climb += 20;}}}
-        		            }
-        		        }
-        		        Rectangle {
-        		            border-radius: 10px;
-        		            border-width: 4px;
-        		            border-color: darkred;
-        		            Text {
-        		                y: 10px;
-        		                text: "Red";
-        		            }
-        		            VerticalBox {
-        		                padding-top: 30px;
-        		                padding: 25px;
-        		                HorizontalLayout {Text {text: "Park";} CheckBox {toggled => {score_red.end_park += 2;}} Rectangle{width: 44px;}CheckBox {toggled => {score_red.end_park += 2;}}}
-								HorizontalLayout {Text {text: "Climb";} CheckBox {toggled => {score_red.climb += 20;}} Rectangle{width: 44px;}CheckBox {toggled => {score_red.climb += 20;}}}
-        		            }
-        		        }
-        		    }
+				VerticalLayout {
+					HorizontalLayout {Text {text: "Renk 1:";} Text {text: "";}}
 				}
 			}
-
 		}
 	}
-	Tab {
-		title: "Alliance Selection";
-
-		VerticalLayout {
-			HorizontalLayout {Text {text: "Renk 1:";} Text {text: "";}}
-		}
-	}
-
-	Tab {
-		title: "Bonus Scoring";
-
-		VerticalLayout {
-			Rectangle {height: 10px;}
-			Rectangle {
-				height: 300px;
-
-				background: black;
-				border-radius: 10px;
-				border-width: 1px;
-				border-color: darkblue;
-
-				Text {text: "Bonus"; color: white; y: 3px;}
-				HorizontalLayout {
-					y: 10px;
-					height: 295px;
-					padding: 20px;
-					spacing: 20px;
-					Rectangle {
-						width: 46%;
-						border-radius: 10px;
-						border-width: 4px;
-						border-color: darkblue;
-						Text {
-							y: 10px;
-							text: "Blue";
-						}
-						VerticalBox {
-							padding-top: 30px;
-							padding: 25px;
-							HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_blue.primary = self.value;}}}	
-							HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_blue.power_up = self.value;}}}
-							HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_blue.redundant = self.value;}}}
-						}
-					}
-					Rectangle {
-						border-radius: 10px;
-						border-width: 4px;
-						border-color: darkred;
-						Text {
-							y: 10px;
-							text: "Red";
-						}
-						VerticalBox {
-							padding-top: 30px;
-							padding: 25px;
-							HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_red.primary = self.value;}}}	
-							HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_red.power_up = self.value;}}}
-							HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_red.redundant = self.value;}}}
-						}
-					}
-				}
-			}	
-		}
-	}
-}
 }
