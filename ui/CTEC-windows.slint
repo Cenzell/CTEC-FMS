@@ -1,4 +1,4 @@
-import { Button, VerticalBox, HorizontalBox, SpinBox, GroupBox, CheckBox, TabWidget } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, SpinBox, GroupBox, CheckBox, TabWidget, LineEdit } from "std-widgets.slint";
 import "./assets/Roboto_Condensed-Regular.ttf";
 
 export global theme {
@@ -13,7 +13,7 @@ export global theme {
 }
 
 export global vars {
-	in-out property <int> current_menu: 0;
+	in-out property <int> current_menu:0;
 	in-out property <int> matchNumber: 1;
 
 	in-out property<string> red_team1;
@@ -26,7 +26,7 @@ export global vars {
 	in-out property<string> blue_team1_members;
 	in-out property<string> blue_team2_members;
 
-	in-out property <int> max_matches: 10;
+	in-out property <int> max_matches: 21;
 
 	in-out property <int> red_score: 0;
 	in-out property <int> blue_score: 0;
@@ -98,7 +98,36 @@ export global display_score {
 
 	in-out property <int> blue_bonus: 0;
 	in-out property <int> red_bonus: 0;
-} 
+}
+
+export global team_rank {
+	in-out property <string> rank1_n: "";
+	in-out property <string> rank2_n: "";
+	in-out property <string> rank3_n: "";
+	in-out property <string> rank4_n: "";
+	in-out property <string> rank5_n: "";
+	in-out property <string> rank6_n: "";
+	in-out property <string> rank7_n: "";
+	in-out property <string> rank8_n: "";
+
+	in-out property <string> rank1_rp: "";
+	in-out property <string> rank2_rp: "";
+	in-out property <string> rank3_rp: "";
+	in-out property <string> rank4_rp: "";
+	in-out property <string> rank5_rp: "";
+	in-out property <string> rank6_rp: "";
+	in-out property <string> rank7_rp: "";
+	in-out property <string> rank8_rp: "";
+
+	in-out property <string> rank1_as: "";
+	in-out property <string> rank2_as: "";
+	in-out property <string> rank3_as: "";
+	in-out property <string> rank4_as: "";
+	in-out property <string> rank5_as: "";
+	in-out property <string> rank6_as: "";
+	in-out property <string> rank7_as: "";
+	in-out property <string> rank8_as: "";
+}
 
 export component ScoreWindow inherits Window {
 
@@ -111,6 +140,79 @@ export component ScoreWindow inherits Window {
 
 	background: #000;
 
+	if (vars.current_menu == 1) :
+		VerticalLayout {
+			width: 60%;
+			padding: 20px;
+			HorizontalLayout {
+				Rectangle {
+					border-top-left-radius: 30px;
+					border-bottom-left-radius: 30px;
+					background: blue;
+					width: 40px;
+				}
+				Rectangle {
+					width: 80%;
+					height: 600px;
+					background: white;
+					VerticalLayout {
+						padding: 50px;
+						padding-left: 20px;
+						spacing: 20px;
+						HorizontalLayout {
+							VerticalLayout {
+								padding: 20px;
+
+								property <length> text_height: 30px;
+								Text {text: team_rank.rank1_n; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank2_n; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank3_n; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank4_n; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank5_n; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank6_n; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank7_n; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank8_n; color: black; font-size: text_height; horizontal-alignment: center;}
+							}
+							VerticalLayout {
+								padding: 20px;
+								spacing: 20px;
+
+								property <length> text_height: 30px;
+								Text {text: team_rank.rank1_rp; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank2_rp; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank3_rp; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank4_rp; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank5_rp; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank6_rp; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank7_rp; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank8_rp; color: black; font-size: text_height; horizontal-alignment: center;}
+							}
+							VerticalLayout {
+								padding: 20px;
+								spacing: 20px;
+
+								property <length> text_height: 30px;
+								Text {text: team_rank.rank1_as; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank2_as; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank3_as; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank4_as; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank5_as; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank6_as; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank7_as; color: black; font-size: text_height; horizontal-alignment: center;}
+								Text {text: team_rank.rank8_as; color: black; font-size: text_height; horizontal-alignment: center;}
+							}
+						}
+					}
+				}
+				Rectangle {
+					border-top-right-radius: 30px;
+					border-bottom-right-radius: 30px;
+					background: red;
+					width: 40px;
+				}
+			}
+		}
+	
 	if (vars.current_menu == 0) :
 		Rectangle {
 			HorizontalLayout {
@@ -458,10 +560,16 @@ export component ScoreWindow inherits Window {
 			source: @image-url("./assets/StellerConstruction.png");
 			image-fit: contain;
 		}
-}}
+	if (vars.current_menu == 2) :
+		Rectangle {
+		}
+	}
+}
 
 export component ControlWindow inherits Window {
+	callback add-match(int, int, int, int);
 	callback switch_tab(int);
+	callback submit_score();
 
 	width: 960px;
 	height: 900px;
@@ -505,12 +613,14 @@ export component ControlWindow inherits Window {
 				y: parent.height * 0.085;
 
 				Button {text: "Match"; width: 60px; height: 35px; y: parent.y / 2; clicked => {switch_tab(0);}}
-				Button {text: "Rank"; width: 60px; height: 35px; y: parent.y / 2; clicked => {switch_tab(1);}}
-				Button {text: "Alliance Selection"; width: 130px; height: 35px; y: parent.y / 2; clicked => {switch_tab(2);}}
+				Button {text: "Rank"; width: 60px; height: 35px; y: parent.y / 2; clicked => {switch_tab(2);}}
+				Button {text: "Alliance Selection"; width: 130px; height: 35px; y: parent.y / 2; clicked => {switch_tab(1);}}
 
 				Button {text: "Start"; width: 60px; height: 35px; y: parent.y / 2; clicked => {}}
 				Button {text: "Pause"; width: 60px; height: 35px; y: parent.y / 2; clicked => {}}
 				Button {text: "Reset"; width: 60px; height: 35px; y: parent.y / 2; clicked => {}}
+
+				Button {text: "Submit Score"; width: 60px; height: 35px; y: parent.y / 2; clicked => {submit_score();}}
 
 				Rectangle {Text {text: "Match Number:";}}
 				Rectangle {
@@ -555,8 +665,8 @@ export component ControlWindow inherits Window {
 								VerticalBox {
 									padding-top: 30px;
 									padding: 25px;
-									HorizontalLayout {Text {text: "Park";} CheckBox { toggled => {score_blue.park += 6;} } Rectangle{width: 44px;} CheckBox { toggled => {score_blue.park += 6;}}}
-									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_blue.auto_ground = self.value * 4;}}}
+									HorizontalLayout {Text {text: "Park";} SpinBox {changed value => {score_blue.park = self.value * 6;}}}
+									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; value: score_blue.auto_ground; changed value => {score_blue.auto_ground = self.value * 4;}}}
 									HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_blue.auto_beacon = self.value * 8;}}}
 									HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_blue.auto_center = self.value * 10;}}}
 									HorizontalLayout {Text {text: "L1";} SpinBox {width: 80px; changed value => {score_blue.auto_L1 = self.value * 6;}}}	
@@ -575,7 +685,7 @@ export component ControlWindow inherits Window {
 								VerticalBox {
 									padding-top: 30px;
 									padding: 25px;
-									HorizontalLayout {Text {text: "Park";} CheckBox { toggled => {score_red.park += 6;} } Rectangle{width: 44px;} CheckBox { toggled => {score_red.park += 6;}}}
+									HorizontalLayout {Text {text: "Park";} SpinBox { changed value => {score_red.park = self.value * 6;}}}
 									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_red.auto_ground = self.value * 4;}}}
 									HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_red.auto_beacon = self.value * 8;}}}
 									HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_red.auto_center = self.value * 10;}}}
@@ -671,8 +781,8 @@ export component ControlWindow inherits Window {
 							VerticalBox {
 								padding-top: 30px;
 								padding: 25px;
-								HorizontalLayout {Text {text: "Park";} CheckBox {toggled => {score_blue.end_park += 2;}} Rectangle{width: 44px;}CheckBox {toggled => {score_blue.end_park += 2;}}}
-								HorizontalLayout {Text {text: "Climb";} CheckBox {toggled => {score_blue.climb += 20;}} Rectangle{width: 44px;}CheckBox {toggled => {score_blue.climb += 20;}}}
+								HorizontalLayout {Text {text: "Park";} SpinBox {changed value => {score_blue.end_park = self.value * 2;}}}
+								HorizontalLayout {Text {text: "Climb";} SpinBox {changed value => {score_blue.climb = self.value * 20;}}}
 							}
 						}
 						Rectangle {
@@ -686,8 +796,8 @@ export component ControlWindow inherits Window {
 							VerticalBox {
 								padding-top: 30px;
 								padding: 25px;
-								HorizontalLayout {Text {text: "Park";} CheckBox {toggled => {score_red.end_park += 2;}} Rectangle{width: 44px;}CheckBox {toggled => {score_red.end_park += 2;}}}
-								HorizontalLayout {Text {text: "Climb";} CheckBox {toggled => {score_red.climb += 20;}} Rectangle{width: 44px;}CheckBox {toggled => {score_red.climb += 20;}}}
+								HorizontalLayout {Text {text: "Park";} SpinBox {changed value => {score_red.end_park = self.value * 2;}}}
+								HorizontalLayout {Text {text: "Climb";} SpinBox {changed value => {score_red.climb = self.value * 20;}}}
 							}
 						}
 					}
@@ -700,7 +810,7 @@ export component ControlWindow inherits Window {
 				VerticalLayout {
                     Rectangle {height: 10px;}
                     Rectangle {
-        	    	    height: 300px;
+        	    	    height: 190px;
 
         	    	    background: black;
         	    	    border-radius: 10px;
@@ -710,7 +820,7 @@ export component ControlWindow inherits Window {
         	    	    Text {text: "Bonus"; color: white; y: 3px;}
         	    	    HorizontalLayout {
         	    	        y: 10px;
-        	    	        height: 295px;
+        	    	        height: 180px;
         	    	        padding: 20px;
         	    	        spacing: 20px;
         	    	        Rectangle {
@@ -725,7 +835,7 @@ export component ControlWindow inherits Window {
         	    	            VerticalBox {
         	    	                padding-top: 30px;
         	    	                padding: 25px;
-        	    	                HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_red.primary = self.value;}}}	
+        	    	                HorizontalLayout {Text {text: "Primary Communication";} CheckBox {toggled => {score_red.primary = self.checked ? score_red.center * 5 : 0;}}}	
         	    	                HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_red.power_up = self.value;}}}
         	    	                HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_red.redundant = self.value;}}}
         	    	            }
@@ -741,7 +851,7 @@ export component ControlWindow inherits Window {
         	    	            VerticalBox {
         	    	                padding-top: 30px;
         	    	                padding: 25px;
-        	    	                HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_red.primary = self.value;}}}	
+        	    	                HorizontalLayout {Text {text: "Primary Communication";} CheckBox {toggled => {score_blue.primary = self.checked ? score_blue.center * 5 : 0;}}}	
         	    	                HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_red.power_up = self.value;}}}
         	    	                HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_red.redundant = self.value;}}}
         	    	            }
@@ -750,11 +860,49 @@ export component ControlWindow inherits Window {
         	    	}	
         		}
 			}
+			
 			Tab {
 				title: "Alliance Selection";
-
-				VerticalLayout {
-					HorizontalLayout {Text {text: "Renk 1:";} Text {text: "";}}
+				Rectangle {
+					background: grey;
+					VerticalBox {
+						alignment: start;
+						padding: 10px;
+						spacing: 10px;
+						
+						Text {
+							text: "Match Scheduler";
+							font-size: 24px;
+						}
+						
+						HorizontalBox {
+							spacing: 10px;
+							Text { text: "Red Alliance:"; vertical-alignment: center; }
+							red1 := LineEdit { placeholder-text: "Team 1"; width: 80px; }
+							red2 := LineEdit { placeholder-text: "Team 2"; width: 80px; }
+						}
+						
+						HorizontalBox {
+							spacing: 10px;
+							Text { text: "Blue Alliance:"; vertical-alignment: center; }
+							blue1 := LineEdit { placeholder-text: "Team 1"; width: 80px; }
+							blue2 := LineEdit { placeholder-text: "Team 2"; width: 80px; }
+						}
+						
+						Button {
+							text: "Add Match";
+							clicked => {
+								// Convert text inputs to integers
+								// Note: In real code, add error handling for invalid inputs
+								add-match(
+									red1.text.to-float(), 
+									red2.text.to-float(), 
+									blue1.text.to-float(), 
+									blue2.text.to-float()
+								);
+							}
+						}
+					}
 				}
 			}
 		}
