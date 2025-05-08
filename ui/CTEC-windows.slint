@@ -30,6 +30,8 @@ export global vars {
 
 	in-out property <int> red_score: 0;
 	in-out property <int> blue_score: 0;
+
+	in-out property <string> time_display: "3:00";
 }
 
 export global score_blue {
@@ -54,6 +56,9 @@ export global score_blue {
 	in-out property <int> primary: 0;
 	in-out property <int> power_up: 0;
 	in-out property <int> redundant: 0;
+	
+	in-out property <int> major_foul: 0;
+	in-out property <int> minor_foul: 0;
 }
 
 export global score_red {
@@ -78,6 +83,9 @@ export global score_red {
 	in-out property <int> primary: 0;
 	in-out property <int> power_up: 0;
 	in-out property <int> redundant: 0;
+
+	in-out property <int> major_foul: 0;
+	in-out property <int> minor_foul: 0;
 }
 
 export global display_score {
@@ -98,6 +106,9 @@ export global display_score {
 
 	in-out property <int> blue_bonus: 0;
 	in-out property <int> red_bonus: 0;
+
+	in-out property <int> blue_penalty: 0;
+	in-out property <int> red_penalty: 0;
 }
 
 export global team_rank {
@@ -339,7 +350,7 @@ export component ScoreWindow inherits Window {
 								y: 1px;
 								color: black;
 								font-size: 45px;
-								text: "2:30";
+								text: vars.time_display;
 							}
 						}
 						Rectangle {
@@ -484,7 +495,7 @@ export component ScoreWindow inherits Window {
 								color: black;
 								font-size: 45px;
 								//font-size: 10px;
-								text: "2:30";//score.park + " " + score.auto_ground + " " + score.auto_beacon + " " + score.auto_center + " " + score.auto_L1 + " " + score.auto_L2 + " " + score.auto_L3 + " " + score.ground + " " + score.beacon + " " + score.center + " " + score.L1 + " " + score.L2 + " " + score.L3 + " " + score.end_park + " " + score.climb;
+								text: vars.time_display;//score.park + " " + score.auto_ground + " " + score.auto_beacon + " " + score.auto_center + " " + score.auto_L1 + " " + score.auto_L2 + " " + score.auto_L3 + " " + score.ground + " " + score.beacon + " " + score.center + " " + score.L1 + " " + score.L2 + " " + score.L3 + " " + score.end_park + " " + score.climb;
 							}
 						}
 						Rectangle {
@@ -524,6 +535,7 @@ export component ScoreWindow inherits Window {
 									Text {text: display_score.blue_grid; color: black; font-size: text_height; horizontal-alignment: center;}
 									Text {text: display_score.blue_endgame; color: black; font-size: text_height; horizontal-alignment: center;}
 									Text {text: display_score.blue_bonus; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.blue_penalty; color: black; font-size: text_height; horizontal-alignment: center;}
 								}
 								VerticalLayout {
 									padding: 20px;
@@ -535,6 +547,7 @@ export component ScoreWindow inherits Window {
 									Text {text: "Resource Grids"; color: black; font-size: text_height; horizontal-alignment: center;}
 									Text {text: "Endgame"; color: black; font-size: text_height; horizontal-alignment: center;}
 									Text {text: "Bonus"; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: "Penalty"; color: black; font-size: text_height; horizontal-alignment: center;}
 								}
 								VerticalLayout {
 									padding: 20px;
@@ -546,6 +559,7 @@ export component ScoreWindow inherits Window {
 									Text {text: display_score.red_grid; color: black; font-size: text_height; horizontal-alignment: center;}
 									Text {text: display_score.red_endgame; color: black; font-size: text_height; horizontal-alignment: center;}
 									Text {text: display_score.red_bonus; color: black; font-size: text_height; horizontal-alignment: center;}
+									Text {text: display_score.red_penalty; color: black; font-size: text_height; horizontal-alignment: center;}
 								}
 							}
 						}
@@ -570,9 +584,11 @@ export component ControlWindow inherits Window {
 	callback add-match(int, int, int, int);
 	callback switch_tab(int);
 	callback submit_score();
+    callback reset_clicked();
+	callback start_clicked();
 
 	width: 960px;
-	height: 900px;
+	height: 930px;
 	background: gray;
 
 	title: "CTEC - Control";
@@ -616,9 +632,9 @@ export component ControlWindow inherits Window {
 				Button {text: "Rank"; width: 60px; height: 35px; y: parent.y / 2; clicked => {switch_tab(2);}}
 				Button {text: "Alliance Selection"; width: 130px; height: 35px; y: parent.y / 2; clicked => {switch_tab(1);}}
 
-				Button {text: "Start"; width: 60px; height: 35px; y: parent.y / 2; clicked => {}}
+				Button {text: "Start"; width: 60px; height: 35px; y: parent.y / 2; clicked => {start_clicked();}}
 				Button {text: "Pause"; width: 60px; height: 35px; y: parent.y / 2; clicked => {}}
-				Button {text: "Reset"; width: 60px; height: 35px; y: parent.y / 2; clicked => {}}
+				Button {text: "Reset"; width: 60px; height: 35px; y: parent.y / 2; clicked => {reset_clicked();}}
 
 				Button {text: "Submit Score"; width: 60px; height: 35px; y: parent.y / 2; clicked => {submit_score();}}
 
@@ -640,7 +656,7 @@ export component ControlWindow inherits Window {
 				VerticalLayout {
 					Rectangle {height: 10px;}
 					Rectangle {
-						height: 300px;
+						height: 340px;
 
 						background: black;
 						border-radius: 10px;
@@ -650,7 +666,7 @@ export component ControlWindow inherits Window {
 						Text {text: "Auto Score"; color: white; y: 3px;}
 						HorizontalLayout {
 							y: 10px;
-							height: 295px;
+							height: 335px;
 							padding: 20px;
 							spacing: 20px;
 							Rectangle {
@@ -665,7 +681,7 @@ export component ControlWindow inherits Window {
 								VerticalBox {
 									padding-top: 30px;
 									padding: 25px;
-									HorizontalLayout {Text {text: "Park";} SpinBox {changed value => {score_blue.park = self.value * 6;}}}
+									HorizontalLayout {Text {text: "Park";} SpinBox {width: 80px; changed value => {score_blue.park = self.value * 6;}}}
 									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; value: score_blue.auto_ground; changed value => {score_blue.auto_ground = self.value * 4;}}}
 									HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_blue.auto_beacon = self.value * 8;}}}
 									HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_blue.auto_center = self.value * 10;}}}
@@ -685,7 +701,7 @@ export component ControlWindow inherits Window {
 								VerticalBox {
 									padding-top: 30px;
 									padding: 25px;
-									HorizontalLayout {Text {text: "Park";} SpinBox { changed value => {score_red.park = self.value * 6;}}}
+									HorizontalLayout {Text {text: "Park";} SpinBox {width: 80px; changed value => {score_red.park = self.value * 6;}}}
 									HorizontalLayout {Text {text: "Ground";} SpinBox {width: 80px; changed value => {score_red.auto_ground = self.value * 4;}}}
 									HorizontalLayout {Text {text: "Beacon";} SpinBox {width: 80px; changed value => {score_red.auto_beacon = self.value * 8;}}}
 									HorizontalLayout {Text {text: "Beacon Center";} SpinBox {width: 80px; changed value => {score_red.auto_center = self.value * 10;}}}
@@ -699,7 +715,7 @@ export component ControlWindow inherits Window {
 				}
 		
 				Rectangle {
-					y: 325px;
+					y: 360px;
 					height: 300px;
 				
 					background: black;
@@ -755,7 +771,7 @@ export component ControlWindow inherits Window {
 					}
 				}
 				Rectangle {
-					y: 635px;
+					y: 670px;
 					height: 110px;
 				
 					background: black;
@@ -775,14 +791,14 @@ export component ControlWindow inherits Window {
 							border-width: 4px;
 							border-color: darkblue;
 							Text {
-								y: 10px;
+								y: 7px;
 								text: "Blue";
 							}
 							VerticalBox {
-								padding-top: 30px;
+								padding-top: 25px;
 								padding: 25px;
-								HorizontalLayout {Text {text: "Park";} SpinBox {changed value => {score_blue.end_park = self.value * 2;}}}
-								HorizontalLayout {Text {text: "Climb";} SpinBox {changed value => {score_blue.climb = self.value * 20;}}}
+								HorizontalLayout {Text {text: "Park";} SpinBox {width: 80px; changed value => {score_blue.end_park = self.value * 2;}}}
+								HorizontalLayout {Text {text: "Climb";} SpinBox {width: 80px; changed value => {score_blue.climb = self.value * 20;}}}
 							}
 						}
 						Rectangle {
@@ -790,14 +806,14 @@ export component ControlWindow inherits Window {
 							border-width: 4px;
 							border-color: darkred;
 							Text {
-								y: 10px;
+								y: 7px;
 								text: "Red";
 							}
 							VerticalBox {
-								padding-top: 30px;
+								padding-top: 25px;
 								padding: 25px;
-								HorizontalLayout {Text {text: "Park";} SpinBox {changed value => {score_red.end_park = self.value * 2;}}}
-								HorizontalLayout {Text {text: "Climb";} SpinBox {changed value => {score_red.climb = self.value * 20;}}}
+								HorizontalLayout {Text {text: "Park";} SpinBox {width: 80px; changed value => {score_red.end_park = self.value * 2;}}}
+								HorizontalLayout {Text {text: "Climb";} SpinBox {width: 80px; changed value => {score_red.climb = self.value * 20;}}}
 							}
 						}
 					}
@@ -835,9 +851,9 @@ export component ControlWindow inherits Window {
         	    	            VerticalBox {
         	    	                padding-top: 30px;
         	    	                padding: 25px;
-        	    	                HorizontalLayout {Text {text: "Primary Communication";} CheckBox {toggled => {score_red.primary = self.checked ? score_red.center * 5 : 0;}}}	
-        	    	                HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_red.power_up = self.value;}}}
-        	    	                HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_red.redundant = self.value;}}}
+        	    	                HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_blue.primary = self.value * 5;}}}
+        	    	                HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_blue.power_up = self.value * 5;}}}
+        	    	                HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_blue.redundant = self.value * 10;}}}
         	    	            }
         	    	        }
         	    	        Rectangle {
@@ -851,9 +867,57 @@ export component ControlWindow inherits Window {
         	    	            VerticalBox {
         	    	                padding-top: 30px;
         	    	                padding: 25px;
-        	    	                HorizontalLayout {Text {text: "Primary Communication";} CheckBox {toggled => {score_blue.primary = self.checked ? score_blue.center * 5 : 0;}}}	
-        	    	                HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_red.power_up = self.value;}}}
-        	    	                HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_red.redundant = self.value;}}}
+        	    	                HorizontalLayout {Text {text: "Primary Communication";} SpinBox {width: 80px; changed value => {score_red.primary = self.value * 5;}}}
+        	    	                HorizontalLayout {Text {text: "Power Up";} SpinBox {width: 80px; changed value => {score_red.power_up = self.value * 5;}}}
+        	    	                HorizontalLayout {Text {text: "Redundant Communication";} SpinBox {width: 80px; changed value => {score_red.redundant = self.value * 10;}}}
+        	    	            }
+        	    	        }
+        	    	    }
+        	    	}
+					Rectangle {height: 10px;}
+                    Rectangle {
+        	    	    height: 190px;
+
+        	    	    background: black;
+        	    	    border-radius: 10px;
+        	    	    border-width: 1px;
+        	    	    border-color: darkblue;
+
+        	    	    Text {text: "Penalty Points"; color: white; y: 3px;}
+        	    	    HorizontalLayout {
+        	    	        y: 10px;
+        	    	        height: 180px;
+        	    	        padding: 20px;
+        	    	        spacing: 20px;
+        	    	        Rectangle {
+        	    	            width: 46%;
+        	    	            border-radius: 10px;
+        	    	            border-width: 4px;
+        	    	            border-color: darkblue;
+        	    	            Text {
+        	    	                y: 10px;
+        	    	                text: "Blue";
+        	    	            }
+        	    	            VerticalBox {
+        	    	                padding-top: 30px;
+        	    	                padding: 25px;
+        	    	                HorizontalLayout {Text {text: "Minor Foul";} SpinBox {width: 80px; changed value => {score_red.minor_foul = self.value * 5;}}}
+        	    	                HorizontalLayout {Text {text: "Major Foul";} SpinBox {width: 80px; changed value => {score_red.major_foul = self.value * 15;}}}
+        	    	            }
+        	    	        }
+        	    	        Rectangle {
+        	    	            border-radius: 10px;
+        	    	            border-width: 4px;
+        	    	            border-color: darkred;
+        	    	            Text {
+        	    	                y: 10px;
+        	    	                text: "Red";
+        	    	            }
+        	    	            VerticalBox {
+        	    	                padding-top: 30px;
+        	    	                padding: 25px;
+        	    	                HorizontalLayout {Text {text: "Minor Foul";} SpinBox {width: 80px; changed value => {score_blue.minor_foul = self.value * 5;}}}
+        	    	                HorizontalLayout {Text {text: "Major Foul";} SpinBox {width: 80px; changed value => {score_blue.major_foul = self.value * 15;}}}
         	    	            }
         	    	        }
         	    	    }

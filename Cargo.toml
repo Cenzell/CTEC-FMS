@@ -9,6 +9,7 @@ authors = ["Ethan Hartshorn", "Ethan Hartshorn <ethanhartshorn488@outlook.com>"]
 
 [dependencies]
 slint = "1.11.0"
+rodio = "0.20.1"
 
 [build-dependencies]
 slint-build = "1.11.0"

@@ -1,7 +1,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use std::{error::Error, rc::Rc};
-use std::time::Duration;
-use slint::{Model, VecModel};
+use std::cell::RefCell;
+use std::{error::Error, rc::{Rc, Weak}};
+use std::time::{Duration, Instant};
+use slint::{Model, SharedString, Timer, TimerMode, VecModel};
+
+use rodio::{Decoder, OutputStream, Sink};
+use std::fs::File;
+use std::io::BufReader;
 
 use std::sync::{Arc, Mutex};
 
@@ -45,19 +50,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let team_data = Rc::new(VecModel::from(vec![
         Team { number: 1, name: "Deuce 🎾".into(), members: "Ian - JT".into(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0 },
-        Team { number: 2, name: "AK-5000".into(), members: "Logan - Bennett".into(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
+        Team { number: 2, name: "AK-500".into(), members: "Logan - Bennett".into(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
         Team { number: 3, name: "JPC".to_string(), members: "Sam - Xavier".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
-        Team { number: 4, name: "Cooper Bot".to_string(), members: "John - Scott".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
+        Team { number: 4, name: "Cooper Crew".to_string(), members: "John - Scott".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
         Team { number: 5, name: "Fat Man".to_string(), members: "Austin - Evan".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
         Team { number: 6, name: "Steve".to_string(), members: "Fabian - Tanav - Cru".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
         Team { number: 7, name: "'Might' Blow Up".to_string(), members: "Andrew - Jack - Jackson L".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
         Team { number: 8, name: "Sauron".to_string(), members: "Jesse - Zach - Drew".to_string(), rank: 0, wins: 0, losses: 0, ties: 0, average_score: 0, rp: 0},
     ]));
-
-    let alliance_1: [i32; 2] = [0, 0];
-    let alliance_2: [i32; 2] = [0, 0];
-    let alliance_3: [i32; 2] = [0, 0];
-    let alliance_4: [i32; 2] = [0, 0];
 
     let mut match_schedule = vec![
         Match { red_alliance: (2, 7), blue_alliance: (3, 6)},
@@ -88,8 +88,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut red_bonus: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     let mut blue_score: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     let mut red_score: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-
-    let mut add_match: [usize; 5] = [1,0,0,0,0];
+    let mut blue_penalty: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    let mut red_penalty: [i32; 30] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
     // Initialize the shared state
     let add_match_state: Arc<Mutex<[usize; 5]>> = Arc::new(Mutex::new([0usize; 5]));
@@ -106,6 +106,128 @@ fn main() -> Result<(), Box<dyn Error>> {
     let teams: Rc<Rc<VecModel<Team>>> = Rc::new(team_data.clone()); // Wrap in Rc for shared ownership
 
     let mut old_match_number = 1;
+
+
+// Define the TimerState struct
+struct TimerState {
+    running: bool,
+    seconds_remaining: i32,
+    start_time: Option<Instant>,
+}
+
+// Then in your main function, add the timer code:
+
+// Add these at the top of your main function after other declarations
+let match_timer_state = Arc::new(Mutex::new(TimerState {
+    running: false,
+    seconds_remaining: 150, // 2:30 match time
+    start_time: None,
+}));
+
+// Make additional clones for each closure
+let score_ui_weak_for_timer = score_ui_weak.clone();
+let control_ui_weak_for_timer = control_ui_weak.clone();
+let timer_state_for_timer = match_timer_state.clone();
+
+// Set up a match timer that updates every 100ms
+let match_timer = slint::Timer::default();
+match_timer.start(
+    slint::TimerMode::Repeated,
+    Duration::from_millis(100),
+    move || {
+        if let (Some(control), Some(score)) = (control_ui_weak_for_timer.upgrade(), score_ui_weak_for_timer.upgrade()) {
+            // Get a lock on the timer state
+            if let Ok(mut timer_state) = timer_state_for_timer.try_lock() {
+                if timer_state.running {
+                    // Calculate the time remaining
+                    if let Some(start_time) = timer_state.start_time {
+                        let elapsed = start_time.elapsed();
+                        let elapsed_seconds = elapsed.as_secs() as i32;
+                        
+                        // Calculate remaining time
+                        let seconds_left = if timer_state.seconds_remaining > elapsed_seconds {
+                            timer_state.seconds_remaining - elapsed_seconds
+                        } else {
+                            // Timer finished
+                            timer_state.running = false;
+                            0
+                        };
+                        
+                        // Update the displays
+                        let minutes = seconds_left / 60;
+                        let seconds = seconds_left % 60;
+                        let time_display = format!("{:02}:{:02}", minutes, seconds);
+                        
+                        control.global::<vars>().set_time_display(time_display.clone().into());
+                        score.global::<vars>().set_time_display(time_display.into());
+                        
+                        // Optional: Flash the timer when it's almost done (e.g., last 30 seconds)
+                        if seconds_left <= 30 {
+                            // Toggle a visual indicator every second
+                            //control.global::<vars>().set_timer_warning(seconds_left % 2 == 0);
+                            //score.global::<vars>().set_timer_warning(seconds_left % 2 == 0);
+                        }
+                    } else {
+                        // Timer is running but start time not set (shouldn't happen)
+                        timer_state.start_time = Some(std::time::Instant::now());
+                    }
+                }
+            }
+        }
+    },
+);
+
+// Create new clones for the start timer callback
+let control_ui_weak_for_start = control_ui_weak.clone();
+let score_ui_weak_for_start = score_ui_weak.clone();
+let timer_state_for_start = match_timer_state.clone();
+
+// Add button handlers for the control UI
+control_ui.on_start_clicked(move || {
+    if let Ok(mut timer_state) = timer_state_for_start.lock() {
+        if !timer_state.running {
+            // Start the timer
+            timer_state.running = true;
+            timer_state.start_time = Some(std::time::Instant::now());
+            println!("Timer started");
+        } else {
+            // If already running, pause it
+            timer_state.running = false;
+            
+            // Remember how much time was left when paused
+            if let Some(start_time) = timer_state.start_time {
+                let elapsed = start_time.elapsed();
+                let elapsed_seconds = elapsed.as_secs() as i32;
+                timer_state.seconds_remaining -= elapsed_seconds;
+                timer_state.start_time = None;
+            }
+            println!("Timer paused");
+        }
+    }
+});
+
+// Create new clones for the reset timer callback
+let control_ui_weak_for_reset = control_ui_weak.clone();
+let score_ui_weak_for_reset = score_ui_weak.clone();
+let timer_state_for_reset = match_timer_state.clone();
+
+control_ui.on_reset_clicked(move || {
+    if let Ok(mut timer_state) = timer_state_for_reset.lock() {
+        // Reset the timer
+        timer_state.running = false;
+        timer_state.seconds_remaining = 150; // Reset to 2:30
+        timer_state.start_time = None;
+        
+        // Update displays
+        if let (Some(control), Some(score)) = (control_ui_weak_for_reset.upgrade(), score_ui_weak_for_reset.upgrade()) {
+            //control.global::<vars>().set_timer_display("02:30".into());
+            score.global::<vars>().set_time_display("02:30".into());
+            //control.global::<vars>().set_timer_warning(false);
+            //score.global::<vars>().set_timer_warning(false);
+        }
+        println!("Timer reset");
+    }
+});
 
     control_ui.on_add_match(move |red1, red2, blue1, blue2| {
         // Add the new match to the vector
@@ -248,7 +370,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     
                     // 🔹 Print the sorted list
                     println!("--- Team Rankings ---");
-/*                     for (i, team) in all_teams.iter().enumerate() {
+                        /*for (i, team) in all_teams.iter().enumerate() {
                         println!(
                             "#{:2} - Team {} | Wins: {} | RP: {} | Ties: {} | Losses: {} | Name: {}",
                             i + 1,
@@ -328,8 +450,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                     blue_endgame[match_num as usize - 1] = control.global::<score_blue>().get_end_park() + control.global::<score_blue>().get_climb();
                     red_endgame[match_num as usize - 1] = control.global::<score_red>().get_end_park() + control.global::<score_red>().get_climb();
 
-                    blue_score[match_num as usize - 1] = blue_auto[match_num as usize - 1] + blue_grid[match_num as usize - 1] + blue_array[match_num as usize - 1] + blue_endgame[match_num as usize - 1] + blue_bonus[match_num as usize - 1];
-                    red_score[match_num as usize - 1] = red_auto[match_num as usize - 1] + red_grid[match_num as usize - 1] + red_array[match_num as usize - 1] + red_endgame[match_num as usize - 1] + red_bonus[match_num as usize - 1];
+                    blue_penalty[match_num as usize - 1] = control.global::<score_blue>().get_minor_foul() + control.global::<score_blue>().get_major_foul();
+                    red_penalty[match_num as usize - 1] = control.global::<score_red>().get_minor_foul() + control.global::<score_red>().get_major_foul();
+
+                    blue_score[match_num as usize - 1] = blue_auto[match_num as usize - 1] + blue_grid[match_num as usize - 1] + blue_array[match_num as usize - 1] + blue_endgame[match_num as usize - 1] + blue_bonus[match_num as usize - 1] + blue_penalty[match_num as usize - 1];
+                    red_score[match_num as usize - 1] = red_auto[match_num as usize - 1] + red_grid[match_num as usize - 1] + red_array[match_num as usize - 1] + red_endgame[match_num as usize - 1] + red_bonus[match_num as usize - 1] + red_penalty[match_num as usize - 1];
 
 
                     if let (Some(red1), Some(red2), Some(blue1), Some(blue2)) = (
@@ -355,76 +480,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                         score.global::<vars>().set_red_score(red_score[match_num as usize - 1]);
                     }
                 }
-
-                /*
-                control.on_submit_score({
-                    let teams = teams.clone();
-                    let schedule = schedule.clone();
-                    move || {
-                        let teams_borrowed: Rc<Rc<VecModel<Team>>> = teams.clone();
-                        let match_index = match_num as usize - 1;
-                        let current_match = &schedule[match_index];
-                
-                        if let (Some(mut red1), Some(mut red2), Some(mut blue1), Some(mut blue2)) = (
-                            teams_borrowed.row_data(current_match.red_alliance.0),
-                            teams_borrowed.row_data(current_match.red_alliance.1),
-                            teams_borrowed.row_data(current_match.blue_alliance.0),
-                            teams_borrowed.row_data(current_match.blue_alliance.1),
-                        ) {
-                            let red_total = red_score[match_index];
-                            let blue_total = blue_score[match_index];
-                            let red_end = red_endgame[match_index];
-                            let blue_end = blue_endgame[match_index];
-                
-                            if blue_total > red_total {
-                                blue1.wins += 1;
-                                blue2.wins += 1;
-                                blue1.rp += 3;
-                                blue2.rp += 3;
-                                if blue_end > red_end {
-                                    blue1.rp += 1;
-                                    blue2.rp += 1;
-                                }
-                                red1.losses += 1;
-                                red2.losses += 1;
-                            } else if red_total > blue_total {
-                                red1.wins += 1;
-                                red2.wins += 1;
-                                red1.rp += 3;
-                                red2.rp += 3;
-                                if red_end > blue_end {
-                                    red1.rp += 1;
-                                    red2.rp += 1;
-                                }
-                                blue1.losses += 1;
-                                blue2.losses += 1;
-                            } else {
-                                // It's a tie
-                                red1.ties += 1;
-                                red2.ties += 1;
-                                blue1.ties += 1;
-                                blue2.ties += 1;
-                
-                                red1.rp += 1;
-                                red2.rp += 1;
-                                blue1.rp += 1;
-                                blue2.rp += 1;
-                            }
-                
-                            // Optionally: Update average score
-                            red1.average_score = (red1.average_score + red_total as u8) / 2;
-                            red2.average_score = (red2.average_score + red_total as u8) / 2;
-                            blue1.average_score = (blue1.average_score + blue_total as u8) / 2;
-                            blue2.average_score = (blue2.average_score + blue_total as u8) / 2;
-                
-                            // Push back updates to VecModel
-                            teams_borrowed.set_row_data(current_match.red_alliance.0, red1);
-                            teams_borrowed.set_row_data(current_match.red_alliance.1, red2);
-                            teams_borrowed.set_row_data(current_match.blue_alliance.0, blue1);
-                            teams_borrowed.set_row_data(current_match.blue_alliance.1, blue2);
-                        }
-                    }
-                }); */
                 
                 let control_value = control.global::<vars>().get_matchNumber();
                 let score_value = score.global::<vars>().get_matchNumber();
@@ -460,6 +515,71 @@ fn main() -> Result<(), Box<dyn Error>> {
     score_ui.run()?; // This will block until the score window is closed
 
     Ok(())
+}
+
+use std::thread; // Import the thread module from the standard library
+use slint::invoke_from_event_loop;
+
+fn play_sound(file_path: &str) {
+    if let Ok((_stream, stream_handle)) = OutputStream::try_default() {
+        if let Ok(sink) = Sink::try_new(&stream_handle) {
+            if let Ok(file) = File::open(file_path) {
+                let source = Decoder::new(BufReader::new(file)).unwrap();
+                sink.append(source);
+                sink.detach(); // plays in the background
+            }
+        }
+    }
+}
+
+fn start_timer(app: slint::Weak<ControlWindow>) {
+    let state = Rc::new(RefCell::new(0));
+    let start_time = Rc::new(RefCell::new(Instant::now()));
+    let timer = Timer::default();
+
+    let state_clone = state.clone();
+    let start_time_clone = start_time.clone();
+
+    timer.start(TimerMode::Repeated, std::time::Duration::from_secs(1), move || {
+        let now = Instant::now();
+        let secs = now.duration_since(*start_time_clone.borrow()).as_secs();
+
+        let (remaining, next_state) = match *state_clone.borrow() {
+            0 => {
+                if secs >= 30 {
+                    *start_time_clone.borrow_mut() = now;
+                    *state_clone.borrow_mut() = 1;
+                    (30, 1)
+                } else {
+                    (30 - secs, 0)
+                }
+            }
+            1 => {
+                if secs >= 30 {
+                    *start_time_clone.borrow_mut() = now;
+                    *state_clone.borrow_mut() = 2;
+                    (150, 2)
+                } else {
+                    (30 - secs, 1)
+                }
+            }
+            2 => {
+                if secs >= 150 {
+                    *start_time_clone.borrow_mut() = now;
+                    *state_clone.borrow_mut() = 0;
+                    (180, 0)
+                } else {
+                    (150 - secs, 2)
+                }
+            }
+            _ => (0, 0),
+        };
+
+        if let Some(app) = app.upgrade() {
+            let display_text = SharedString::from(format!("{}", remaining));
+            app.global::<vars>().set_time_display(display_text);
+        }
+    });
 }
 
 fn reset_all_scores(ui: &ControlWindow) {
